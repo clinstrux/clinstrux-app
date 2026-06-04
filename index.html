@@ -628,6 +628,15 @@
 </head>
 <body>
 
+<!-- ════════════════ PLATFORM SHELL ═════════════════════ -->
+<!-- Persistent top navigation bar — rendered by app.js boot -->
+<div id="global-nav" class="clx-nav"></div>
+
+<!-- Router renders platform views here (Dashboard, Case List, New Case, etc.)
+     Workflow pages (#workflow-page, #abx-page, #poly-page) remain below and
+     are shown/hidden separately when a workflow is entered in Phase 3.      -->
+<div id="app-view" style="display:none;"></div>
+
 <!-- ════════════════ SCENARIO ENTRY PAGE ════════════════ -->
 <div id="entry-page" class="ep-overlay">
 
@@ -5559,13 +5568,31 @@
   <span>Not a substitute for clinical judgment. Clinstrux supports decisions but does not replace clinician expertise.</span>
 </div>
 
-<script src="js/core.js"></script>
+<!-- Data first — content constants must be available before workflow scripts -->
 <script src="data/oa-content.js"></script>
 <script src="data/abx-content.js"></script>
 <script src="data/poly-content.js"></script>
+
+<!-- Platform infrastructure -->
+<script src="js/event-bus.js"></script>
+<script src="js/workflow-registry.js"></script>
+<script src="js/case-manager.js"></script>
+<script src="js/router.js"></script>
+
+<!-- Shared utilities -->
+<script src="js/core.js"></script>
+
+<!-- Workflow modules (after content, before shell) -->
 <script src="js/oa.js"></script>
 <script src="js/abx.js"></script>
 <script src="js/poly.js"></script>
+
+<!-- Views (Phase 2) -->
+<script src="js/views/dashboard.js"></script>
+<script src="js/views/case-list.js"></script>
+<script src="js/views/new-case.js"></script>
+
+<!-- Boot (last — all modules must be loaded) -->
 <script src="js/app.js"></script>
 </body>
 </html>
