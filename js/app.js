@@ -6,14 +6,18 @@
    Load order (enforced by index.html):
      data/oa-content.js, abx-content.js, poly-content.js
      js/event-bus.js
+     js/storage-adapter.js
+     js/patient-manager.js
      js/workflow-registry.js
      js/case-manager.js
      js/router.js
      js/core.js
      js/oa.js, abx.js, poly.js
+     js/case-shell.js
      js/views/dashboard.js
      js/views/case-list.js
      js/views/new-case.js
+     js/views/case-shell-view.js
      js/app.js  ← this file (last)
 ════════════════════════════════════════════════════════════ */
 
@@ -51,10 +55,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /* ── 5. Initialise router with all platform routes ──────── */
   Router.init([
-    { path: '/dashboard',  view: DashboardView },
-    { path: '/cases/new',  view: NewCaseView   },
-    { path: '/cases/:id',  view: _CaseStubView },
-    { path: '/cases',      view: CaseListView  }
+    { path: '/dashboard',  view: DashboardView  },
+    { path: '/cases/new',  view: NewCaseView    },
+    { path: '/cases/:id',  view: CaseShellView  },
+    { path: '/cases',      view: CaseListView   }
   ]);
 
 });
