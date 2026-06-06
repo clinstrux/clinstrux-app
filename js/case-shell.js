@@ -5,8 +5,8 @@
    Clinstrux · Clinical Decision Infrastructure
 
    Implemented incrementally:
-     Step 1  STATE RESTORE + WORKFLOW ACTIVATION  ← this file
-     Step 2  Section nav interception + updateSection wiring
+     Step 1  STATE RESTORE + WORKFLOW ACTIVATION  ✓
+     Step 2  Section nav interception + updateSection wiring ← this step
      Step 3  Autosave (applyParam wrappers)
      Step 4  Case context header + exit navigation
      Step 5  Progress strip + Complete button
@@ -25,7 +25,7 @@
 
    Public interface:
      CaseShell.mount(caseId)   — activate shell for a case
-     CaseShell.unmount()       — deactivate, clean up, hide workflow pages
+     CaseShell.unmount()       — deactivate, clean up, restore nav functions
 
    Design constraints:
      — oa.js / abx.js / poly.js are NEVER modified.
@@ -34,23 +34,26 @@
      — All state reads/writes go through CaseManager; direct
        writes to P / ABX / POLY happen only during restore and
        are the minimum required to display saved state.
+     — Nav function wrappers call the original function first,
+       then record the section visit. Original behaviour is
+       always preserved regardless of CaseManager state.
 ════════════════════════════════════════════════════════════ */
 
 var CaseShell = (function () {
 
   /* ── Internal state ─────────────────────────────────────── */
 
-  var _caseId   = null;   /* ID of the currently active case  */
-  var _entry    = null;   /* WorkflowRegistry entry           */
-  var _kase     = null;   /* Case object snapshot             */
+  var _caseId  = null;   /* ID of the currently active case   */
+  var _entry   = null;   /* WorkflowRegistry entry            */
+  var _kase    = null;   /* Case object snapshot              */
+
+  /* Saved originals so unmount() can restore them exactly.   */
+  var _origShowSection      = null;
+  var _origAbxShowSection   = null;
+  var _origPolyShowSection  = null;
 
   /* ══════════════════════════════════════════════════════════
      STEP 1A — STATE RESTORE
-     Reads case.workflow.state from CaseManager and writes
-     each key into the live workflow state global (P / ABX /
-     POLY). Uses WorkflowRegistry stateVar to resolve the
-     correct global. Calls engineFn afterwards so the UI
-     reflects the restored values immediately.
   ══════════════════════════════════════════════════════════ */
 
   function _restoreState(kase, entry) {
@@ -60,39 +63,23 @@ var CaseShell = (function () {
       return;
     }
 
-    /* Resolve the global state object: window['P'], window['ABX'], window['POLY'] */
-    var stateVar = entry.stateVar;           /* 'P' | 'ABX' | 'POLY' */
-    var liveState = window[stateVar];
-
+    var liveState = window[entry.stateVar];
     if (!liveState) {
-      console.error('[CaseShell] State global not found: ' + stateVar);
+      console.error('[CaseShell] State global not found: ' + entry.stateVar);
       return;
     }
 
-    /* Write each saved key into the live state object.
-       Only keys present in savedState are written — keys not
-       in savedState keep their current (default) values.
-       This is safe: the saved state was produced by the same
-       workflow engine and contains the same key set.          */
     var keys = Object.keys(savedState);
     for (var i = 0; i < keys.length; i++) {
-      var k = keys[i];
-      liveState[k] = savedState[k];
+      liveState[keys[i]] = savedState[keys[i]];
     }
 
-    console.info('[CaseShell] State restored for ' + stateVar + ':', JSON.stringify(liveState));
+    console.info('[CaseShell] State restored for ' + entry.stateVar);
 
-    /* Re-run the reasoning engine so all UI panels reflect
-       the restored values. engineFn is a global function name
-       string (e.g. 'runReasoningEngine').                     */
     if (entry.engineFn && typeof window[entry.engineFn] === 'function') {
       window[entry.engineFn]();
     }
 
-    /* OA only: re-initialise the longitudinal progression
-       engine after restoring P so P_BASELINE is set from
-       the restored values, not the boot-time defaults.
-       initFn is null for ABX and POLY.                        */
     if (entry.initFn && typeof window[entry.initFn] === 'function') {
       window[entry.initFn]();
     }
@@ -100,30 +87,12 @@ var CaseShell = (function () {
 
   /* ══════════════════════════════════════════════════════════
      STEP 1B — WORKFLOW ACTIVATION
-     Shows the correct legacy workflow page and hides the
-     platform #app-view. Calls the workflow's enterFn exactly
-     as the original selector buttons did.
-
-     enterWorkflow     → shows #workflow-page, hides entry/selector
-     enterAbxWorkflow  → shows #abx-page, calls abxRunReasoningEngine
-     enterPolyWorkflow → shows #poly-page, calls polyRunReasoningEngine
-
-     Note: enterAbxWorkflow and enterPolyWorkflow call their
-     engine internally. For OA, the engine was already called
-     in _restoreState above. There is no double-call issue
-     because runReasoningEngine is idempotent.
   ══════════════════════════════════════════════════════════ */
 
   function _activateWorkflow(entry) {
-    /* Hide the platform app-view so the workflow page can
-       occupy the full viewport. The router will restore
-       app-view when CaseShell.unmount() navigates away.      */
     var appView = document.getElementById('app-view');
     if (appView) appView.style.display = 'none';
 
-    /* Call the workflow's enter function.
-       These are the same functions called by the old selector
-       buttons — no behaviour change.                          */
     if (entry.enterFn && typeof window[entry.enterFn] === 'function') {
       window[entry.enterFn]();
       console.info('[CaseShell] Activated workflow via ' + entry.enterFn);
@@ -133,15 +102,90 @@ var CaseShell = (function () {
   }
 
   /* ══════════════════════════════════════════════════════════
+     STEP 2 — SECTION NAV INTERCEPTION
+
+     Strategy: replace window.showSection / window.abxShowSection /
+     window.polyShowSection with a thin wrapper that:
+       1. Calls the original function — DOM show/hide unchanged.
+       2. Translates the domId to a canonical sectionId via
+          WorkflowRegistry.getSectionByDomId().
+       3. Calls CaseManager.updateSection() if the sectionId
+          resolves (sub-tabs like 'notes', 'evidence' return
+          null and are silently skipped).
+
+     Only the wrapper for the active workflow is installed.
+     All three originals are saved before any wrapper is set
+     and are restored exactly on unmount().
+  ══════════════════════════════════════════════════════════ */
+
+  function _wrapNavFunctions(caseId, entry) {
+    /* Save all three originals unconditionally so unmount()
+       can always restore them safely.                        */
+    _origShowSection     = window.showSection;
+    _origAbxShowSection  = window.abxShowSection;
+    _origPolyShowSection = window.polyShowSection;
+
+    /* Build a wrapper for the active workflow only.
+       Other workflow nav functions are not called while this
+       case is open, but we leave them unwrapped to be safe.  */
+
+    if (entry.id === 'oa') {
+      window.showSection = function (id, btn) {
+        /* 1. Original DOM behaviour — always runs first */
+        if (_origShowSection) _origShowSection(id, btn);
+
+        /* 2. Section tracking */
+        _recordSection(caseId, entry, id);
+      };
+
+    } else if (entry.id === 'abx') {
+      window.abxShowSection = function (id, btn) {
+        if (_origAbxShowSection) _origAbxShowSection(id, btn);
+        _recordSection(caseId, entry, id);
+      };
+
+    } else if (entry.id === 'poly') {
+      window.polyShowSection = function (id, btn) {
+        if (_origPolyShowSection) _origPolyShowSection(id, btn);
+        _recordSection(caseId, entry, id);
+      };
+    }
+
+    console.info('[CaseShell] Nav wrapper installed for: ' + entry.id);
+  }
+
+  /* Translate domId → canonical sectionId and call
+     CaseManager.updateSection(). Silent no-op for sub-tabs. */
+  function _recordSection(caseId, entry, domId) {
+    var section = WorkflowRegistry.getSectionByDomId(entry.id, domId);
+    if (!section) {
+      /* domId is a sub-tab (e.g. 'notes', 'evidence', 'polypharmacy')
+         that is not a registry section. Skip silently.       */
+      return;
+    }
+    CaseManager.updateSection(caseId, section.id);
+    console.info('[CaseShell] Section visited: ' + section.id + ' (' + domId + ')');
+  }
+
+  /* Restore all three nav functions to their originals.
+     Called by unmount(). Safe to call even if _originals are
+     null (window assignments are no-ops in that case).       */
+  function _restoreNavFunctions() {
+    if (_origShowSection     !== null) { window.showSection     = _origShowSection;     }
+    if (_origAbxShowSection  !== null) { window.abxShowSection  = _origAbxShowSection;  }
+    if (_origPolyShowSection !== null) { window.polyShowSection = _origPolyShowSection; }
+
+    _origShowSection     = null;
+    _origAbxShowSection  = null;
+    _origPolyShowSection = null;
+
+    console.info('[CaseShell] Nav functions restored');
+  }
+
+  /* ══════════════════════════════════════════════════════════
      PUBLIC API
   ══════════════════════════════════════════════════════════ */
 
-  /* mount(caseId)
-     Called by CaseShellView when the router navigates to
-     /cases/:id. Validates the case, restores state, and
-     activates the workflow page.
-     Returns true on success, false if the case is not found
-     or the workflow is not registered.                        */
   function mount(caseId) {
     var kase = CaseManager.getCase(caseId);
     if (!kase) {
@@ -162,48 +206,39 @@ var CaseShell = (function () {
     /* Step 1A: restore saved parameter state */
     _restoreState(kase, entry);
 
+    /* Step 2: install nav interception before activation so
+       the first section shown (by enterFn) is also recorded */
+    _wrapNavFunctions(caseId, entry);
+
     /* Step 1B: show the workflow page */
     _activateWorkflow(entry);
 
     return true;
   }
 
-  /* unmount()
-     Called by CaseShellView when the router navigates away.
-     Hides all workflow pages and shows the platform app-view
-     so the next platform view can mount into it.             */
   function unmount() {
-    /* Hide all legacy workflow pages */
+    /* Step 2: restore original nav functions */
+    _restoreNavFunctions();
+
+    /* Step 1: hide workflow pages, restore app-view */
     var pageIds = ['workflow-page', 'abx-page', 'poly-page'];
     pageIds.forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.style.display = 'none';
     });
 
-    /* Restore the platform app-view */
     var appView = document.getElementById('app-view');
     if (appView) appView.style.display = 'block';
 
-    console.info('[CaseShell] Unmounted, workflow pages hidden');
+    console.info('[CaseShell] Unmounted');
 
     _caseId = null;
     _entry  = null;
     _kase   = null;
   }
 
-  /* activeCaseId()
-     Returns the ID of the currently mounted case, or null.
-     Used by Step 2 (nav interception) and Step 3 (autosave). */
-  function activeCaseId() {
-    return _caseId;
-  }
-
-  /* activeEntry()
-     Returns the WorkflowRegistry entry for the active case.
-     Used by Step 2 (getSectionByDomId lookup).               */
-  function activeEntry() {
-    return _entry;
-  }
+  function activeCaseId() { return _caseId; }
+  function activeEntry()  { return _entry;  }
 
   return {
     mount:        mount,
