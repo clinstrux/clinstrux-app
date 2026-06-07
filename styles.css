@@ -3193,3 +3193,377 @@ input[type="range"]{accent-color:var(--accent);}
 /* ════════════════════════════════════════════════════════════
    END PHASE 3 STEP 5 STYLES
 ════════════════════════════════════════════════════════════ */
+
+
+/* ════════════════════════════════════════════════════════════
+   PHASE 4A — PATIENT VIEWS
+   All new classes prefixed clx-pt-.
+   No existing rules modified.
+════════════════════════════════════════════════════════════ */
+
+/* ── Patient list page ──────────────────────────────────────── */
+
+.clx-pt-list-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px 40px;
+}
+
+.clx-pt-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 0 16px;
+  flex-wrap: wrap;
+}
+
+.clx-pt-search {
+  min-width: 220px;
+  flex: 1;
+  max-width: 320px;
+}
+
+.clx-pt-count {
+  font-size: 11.5px;
+  color: var(--muted);
+  font-weight: 500;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+/* ── Patient table ──────────────────────────────────────────── */
+
+.clx-pt-table-wrap {
+  overflow-x: auto;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.clx-pt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.clx-pt-th {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  padding: 10px 14px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.clx-pt-list-td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.clx-pt-list-row:last-child .clx-pt-list-td {
+  border-bottom: none;
+}
+
+.clx-pt-list-row {
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.clx-pt-list-row:hover .clx-pt-list-td {
+  background: rgba(204, 117, 70, 0.04);
+}
+
+.clx-pt-list-name {
+  min-width: 180px;
+}
+
+.clx-pt-name-primary {
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.clx-pt-name-id {
+  font-size: 10.5px;
+  color: var(--muted);
+  margin-top: 1px;
+  font-family: monospace;
+}
+
+.clx-pt-list-updated {
+  white-space: nowrap;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.clx-pt-case-badge {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+  white-space: nowrap;
+}
+
+.clx-pt-case-badge-empty {
+  background: var(--bg);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+/* ── Patient form / detail page ─────────────────────────────── */
+
+.clx-pt-form-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px 60px;
+}
+
+.clx-pt-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.clx-pt-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--accent);
+  background: none;
+  border: none;
+  padding: 0 0 4px;
+  cursor: pointer;
+  transition: opacity 0.12s;
+}
+
+.clx-pt-back-btn:hover { opacity: 0.75; }
+
+.clx-pt-header-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.clx-pt-form-body {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .clx-pt-form-body { grid-template-columns: 1fr; }
+}
+
+.clx-pt-form-main,
+.clx-pt-form-side {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.clx-pt-form-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* ── Sections within the form card ─────────────────────────── */
+
+.clx-pt-section {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.clx-pt-section:last-of-type {
+  border-bottom: none;
+}
+
+.clx-pt-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.clx-pt-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+/* ── Read-only detail grid ──────────────────────────────────── */
+
+.clx-pt-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 24px;
+}
+
+.clx-pt-detail-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 3px;
+}
+
+.clx-pt-detail-value {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.clx-pt-age-badge {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  margin-left: 6px;
+}
+
+/* ── Tag inputs ─────────────────────────────────────────────── */
+
+.clx-pt-tag-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.clx-pt-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 20px;
+}
+
+.clx-pt-tag-input-row {
+  display: flex;
+}
+
+.clx-pt-tag-input {
+  font-size: 12.5px;
+}
+
+.clx-pt-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+  white-space: nowrap;
+}
+
+.clx-pt-tag-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1;
+  padding: 0;
+  margin-left: 2px;
+  transition: color 0.12s;
+}
+
+.clx-pt-tag-remove:hover { color: var(--red); }
+
+.clx-pt-tag-empty {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* ── Form actions ───────────────────────────────────────────── */
+
+.clx-pt-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-light);
+  background: var(--bg);
+}
+
+/* ── Linked cases panel ─────────────────────────────────────── */
+
+.clx-pt-cases-section {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.clx-pt-case-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.clx-pt-case-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-light);
+  cursor: pointer;
+  transition: opacity 0.12s;
+}
+
+.clx-pt-case-row:hover { opacity: 0.8; }
+.clx-pt-case-row:last-child { border-bottom: none; }
+
+.clx-pt-case-row-ref {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.clx-pt-case-row-wf {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.clx-pt-no-cases {
+  font-size: 12.5px;
+  color: var(--muted);
+  padding: 8px 0 4px;
+}
+
+.clx-pt-start-case-link {
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.clx-pt-start-case-link:hover { text-decoration: underline; }
+
+/* ════════════════════════════════════════════════════════════
+   END PHASE 4A STYLES
+════════════════════════════════════════════════════════════ */
