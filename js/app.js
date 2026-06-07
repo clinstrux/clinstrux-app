@@ -55,10 +55,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /* ── 5. Initialise router with all platform routes ──────── */
   Router.init([
-    { path: '/dashboard',  view: DashboardView  },
-    { path: '/cases/new',  view: NewCaseView    },
-    { path: '/cases/:id',  view: CaseShellView  },
-    { path: '/cases',      view: CaseListView   }
+    { path: '/dashboard',      view: DashboardView   },
+    { path: '/patients/new',   view: PatientFormView },
+    { path: '/patients/:id',   view: PatientFormView },
+    { path: '/patients',       view: PatientListView },
+    { path: '/cases/new',      view: NewCaseView     },
+    { path: '/cases/:id',      view: CaseShellView   },
+    { path: '/cases',          view: CaseListView    }
   ]);
 
 });
@@ -75,6 +78,7 @@ function _renderGlobalNav() {
         '<img src="https://i.ibb.co/b5b8qNk8/clinstrux-full-light.png" alt="Clinstrux" class="clx-nav-logo" />' +
       '</a>' +
       '<nav class="clx-nav-links">' +
+        '<a class="clx-nav-link" onclick="Router.navigate(\'/patients\'); return false;" href="#">Patients</a>' +
         '<a class="clx-nav-link" onclick="Router.navigate(\'/cases\'); return false;" href="#">Cases</a>' +
       '</nav>' +
       '<div class="clx-nav-actions">' +

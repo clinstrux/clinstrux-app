@@ -134,6 +134,7 @@ var CaseManager = (function() {
       },
 
       /* ── Patient context ───────────────────────────────── */
+      patientId: null,              /* pt_* link populated in Phase 1B    */
       patient: {
         identifier:     patientData.identifier     || '',
         age:            patientData.age            || null,
