@@ -7,8 +7,8 @@
    Implemented incrementally:
      Step 1  STATE RESTORE + WORKFLOW ACTIVATION  ✓
      Step 2  Section nav interception             ✓
-     Step 3  Autosave (applyParam wrappers)       ← this step
-     Step 4  Case context header + exit navigation
+     Step 3  Autosave (applyParam wrappers)       ✓
+     Step 4  Case context header + exit nav       ← this step
      Step 5  Progress strip + Complete button
 
    Depends on (must be loaded before this file):
@@ -19,15 +19,6 @@
    Public interface:
      CaseShell.mount(caseId)  — activate shell for a case
      CaseShell.unmount()      — deactivate, restore all wrapped functions
-
-   Design constraints:
-     — oa.js / abx.js / poly.js are NEVER modified.
-     — Original functions are always called first in every wrapper.
-     — WorkflowRegistry is the sole source of workflow metadata.
-     — saveWorkflowState receives a shallow copy of the live state
-       object taken immediately after the original applyParam runs,
-       so the persisted value is always consistent with what the
-       engine just computed from.
 ════════════════════════════════════════════════════════════ */
 
 var CaseShell = (function () {
@@ -48,6 +39,9 @@ var CaseShell = (function () {
   var _origAbxApplyParam  = null;
   var _origPolyApplyParam = null;
 
+  /* Step 4: header element reference per page */
+  var _headerEl = null;
+
   /* ══════════════════════════════════════════════════════════
      STEP 1A — STATE RESTORE
   ══════════════════════════════════════════════════════════ */
@@ -58,20 +52,16 @@ var CaseShell = (function () {
       console.warn('[CaseShell] No saved state for case:', kase.id);
       return;
     }
-
     var liveState = window[entry.stateVar];
     if (!liveState) {
       console.error('[CaseShell] State global not found: ' + entry.stateVar);
       return;
     }
-
     var keys = Object.keys(savedState);
     for (var i = 0; i < keys.length; i++) {
       liveState[keys[i]] = savedState[keys[i]];
     }
-
     console.info('[CaseShell] State restored for ' + entry.stateVar);
-
     if (entry.engineFn && typeof window[entry.engineFn] === 'function') {
       window[entry.engineFn]();
     }
@@ -87,7 +77,6 @@ var CaseShell = (function () {
   function _activateWorkflow(entry) {
     var appView = document.getElementById('app-view');
     if (appView) appView.style.display = 'none';
-
     if (entry.enterFn && typeof window[entry.enterFn] === 'function') {
       window[entry.enterFn]();
       console.info('[CaseShell] Activated workflow via ' + entry.enterFn);
@@ -121,7 +110,6 @@ var CaseShell = (function () {
         _recordSection(caseId, entry, id);
       };
     }
-
     console.info('[CaseShell] Nav wrapper installed for: ' + entry.id);
   }
 
@@ -136,30 +124,12 @@ var CaseShell = (function () {
     if (_origShowSection     !== null) { window.showSection     = _origShowSection;     }
     if (_origAbxShowSection  !== null) { window.abxShowSection  = _origAbxShowSection;  }
     if (_origPolyShowSection !== null) { window.polyShowSection = _origPolyShowSection; }
-    _origShowSection     = null;
-    _origAbxShowSection  = null;
-    _origPolyShowSection = null;
+    _origShowSection = _origAbxShowSection = _origPolyShowSection = null;
     console.info('[CaseShell] Nav functions restored');
   }
 
   /* ══════════════════════════════════════════════════════════
-     STEP 3 — AUTOSAVE (applyParam wrappers)
-
-     Strategy: wrap applyParam / abxApplyParam / polyApplyParam
-     with a thin post-hook that:
-       1. Calls the original function — all DOM updates, engine
-          re-run, and popover close happen exactly as before.
-       2. Reads the live state global (P / ABX / POLY) immediately
-          after the original runs — the state already reflects
-          the parameter change the engine just processed.
-       3. Calls CaseManager.saveWorkflowState(caseId, snapshot)
-          with a shallow copy of the live state object.
-
-     Only the wrapper for the active workflow is installed.
-     All three originals are saved and restored on unmount.
-
-     saveWorkflowState deep-copies internally (JSON round-trip),
-     so passing the live state object directly is safe.
+     STEP 3 — AUTOSAVE
   ══════════════════════════════════════════════════════════ */
 
   function _wrapApplyParam(caseId, entry) {
@@ -169,44 +139,29 @@ var CaseShell = (function () {
 
     if (entry.id === 'oa') {
       window.applyParam = function (key) {
-        /* 1. Original — updates P[key], runs engine, closes popover */
         if (_origApplyParam) _origApplyParam(key);
-        /* 2. Persist the updated state */
         _persistState(caseId, entry);
       };
-
     } else if (entry.id === 'abx') {
       window.abxApplyParam = function (key) {
         if (_origAbxApplyParam) _origAbxApplyParam(key);
         _persistState(caseId, entry);
       };
-
     } else if (entry.id === 'poly') {
       window.polyApplyParam = function (key) {
         if (_origPolyApplyParam) _origPolyApplyParam(key);
         _persistState(caseId, entry);
       };
     }
-
     console.info('[CaseShell] Autosave wrapper installed for: ' + entry.id);
   }
 
-  /* Read the live state global and persist it to CaseManager.
-     Takes a shallow copy via object spread equivalent so the
-     call is synchronous and non-allocating beyond one object. */
   function _persistState(caseId, entry) {
     var liveState = window[entry.stateVar];
     if (!liveState) return;
-
-    /* Shallow copy — sufficient because all state values are
-       primitives (numbers and strings). saveWorkflowState
-       does its own deep copy (JSON round-trip) internally.   */
     var snapshot = {};
     var keys = Object.keys(liveState);
-    for (var i = 0; i < keys.length; i++) {
-      snapshot[keys[i]] = liveState[keys[i]];
-    }
-
+    for (var i = 0; i < keys.length; i++) { snapshot[keys[i]] = liveState[keys[i]]; }
     CaseManager.saveWorkflowState(caseId, snapshot);
     console.info('[CaseShell] Autosaved state for case:', caseId);
   }
@@ -215,10 +170,175 @@ var CaseShell = (function () {
     if (_origApplyParam     !== null) { window.applyParam     = _origApplyParam;     }
     if (_origAbxApplyParam  !== null) { window.abxApplyParam  = _origAbxApplyParam;  }
     if (_origPolyApplyParam !== null) { window.polyApplyParam = _origPolyApplyParam; }
-    _origApplyParam     = null;
-    _origAbxApplyParam  = null;
-    _origPolyApplyParam = null;
+    _origApplyParam = _origAbxApplyParam = _origPolyApplyParam = null;
     console.info('[CaseShell] applyParam functions restored');
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     STEP 4 — CASE CONTEXT HEADER
+
+     Injects a thin bar as the FIRST child of the active
+     workflow page div (#workflow-page, #abx-page, #poly-page).
+     Sits between #global-nav and .dp-wrap in the visual stack.
+
+     Contains:
+       ← Cases          (exit — calls Router.navigate('/cases'))
+       Patient ref · Case ref · Workflow label · Status pill
+
+     Subscribes to case:updated to refresh the status pill
+     when CaseManager events fire (e.g. after updateSection
+     advances status from draft → in_progress).
+
+     Removed from DOM on unmount — leaves no trace.
+  ══════════════════════════════════════════════════════════ */
+
+  /* ── HTML escape ────────────────────────────────────────── */
+
+  function _esc(str) {
+    if (!str && str !== 0) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  /* ── Status pill HTML ───────────────────────────────────── */
+
+  function _statusPill(status) {
+    var labels = {
+      draft:       'Draft',
+      in_progress: 'In Progress',
+      complete:    'Complete',
+      archived:    'Archived'
+    };
+    return '<span class="clx-status-pill clx-status-' + _esc(status) + '">' +
+             (labels[status] || _esc(status)) +
+           '</span>';
+  }
+
+  /* ── Render the header HTML string ─────────────────────── */
+
+  function _buildHeaderHtml(kase, entry) {
+    var patientLabel = kase.patient && kase.patient.identifier
+      ? _esc(kase.patient.identifier)
+      : 'Unknown patient';
+
+    /* If a patientId is linked and PatientManager is available,
+       use the full name from PatientManager. Graceful fallback
+       if PatientManager doesn't have the record.               */
+    if (kase.patientId &&
+        typeof PatientManager !== 'undefined' &&
+        typeof PatientManager.getPatient === 'function') {
+      var pt = PatientManager.getPatient(kase.patientId);
+      if (pt) {
+        patientLabel = _esc(pt.firstName + ' ' + pt.lastName);
+      }
+    }
+
+    return (
+      '<div class="clx-case-header" id="clx-case-header-bar">' +
+
+        /* ← Cases exit button */
+        '<button class="clx-case-header-back" onclick="CaseShell._exitToList()">' +
+          '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" ' +
+               'stroke="currentColor" stroke-width="2.5">' +
+            '<path d="M19 12H5M12 19l-7-7 7-7"/>' +
+          '</svg>' +
+          'Cases' +
+        '</button>' +
+
+        '<div class="clx-case-header-divider"></div>' +
+
+        /* Patient identifier */
+        '<div class="clx-case-header-patient">' +
+          '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" ' +
+               'stroke="currentColor" stroke-width="2">' +
+            '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>' +
+            '<circle cx="12" cy="7" r="4"/>' +
+          '</svg>' +
+          patientLabel +
+        '</div>' +
+
+        '<div class="clx-case-header-sep"></div>' +
+
+        /* Case reference */
+        '<div class="clx-case-header-ref">' + _esc(kase.reference) + '</div>' +
+
+        '<div class="clx-case-header-sep"></div>' +
+
+        /* Workflow label */
+        '<div class="clx-case-header-workflow">' + _esc(entry.label) + '</div>' +
+
+        '<div class="clx-case-header-sep"></div>' +
+
+        /* Status pill — given an id so _refreshHeader can update it */
+        '<div id="clx-case-header-status">' + _statusPill(kase.status) + '</div>' +
+
+      '</div>'
+    );
+  }
+
+  /* ── Inject header into the workflow page ───────────────── */
+
+  function _injectHeader(kase, entry) {
+    var pageEl = document.getElementById(entry.pageId);
+    if (!pageEl) {
+      console.warn('[CaseShell] pageId not found for header injection:', entry.pageId);
+      return;
+    }
+
+    /* Remove any stale header from a previous session */
+    var stale = document.getElementById('clx-case-header-bar');
+    if (stale && stale.parentNode) stale.parentNode.removeChild(stale);
+
+    /* Create and prepend the header element */
+    var wrapper = document.createElement('div');
+    wrapper.innerHTML = _buildHeaderHtml(kase, entry);
+    _headerEl = wrapper.firstChild;
+
+    /* insertBefore the first child of the page div */
+    if (pageEl.firstChild) {
+      pageEl.insertBefore(_headerEl, pageEl.firstChild);
+    } else {
+      pageEl.appendChild(_headerEl);
+    }
+
+    console.info('[CaseShell] Header injected into #' + entry.pageId);
+  }
+
+  /* ── Refresh just the status pill (EventBus subscriber) ─── */
+
+  function _refreshHeaderStatus(caseId) {
+    var statusEl = document.getElementById('clx-case-header-status');
+    if (!statusEl) return;
+    var kase = CaseManager.getCase(caseId);
+    if (!kase) return;
+    statusEl.innerHTML = _statusPill(kase.status);
+  }
+
+  /* ── Remove header from DOM ─────────────────────────────── */
+
+  function _removeHeader() {
+    if (_headerEl && _headerEl.parentNode) {
+      _headerEl.parentNode.removeChild(_headerEl);
+    }
+    _headerEl = null;
+  }
+
+  /* EventBus handler references (stored for clean teardown) */
+  var _onCaseUpdated    = null;
+  var _onSectionVisited = null;
+
+  /* ── Exit: save state, navigate to case list ────────────── */
+  /* Exposed on window so the inline onclick can reach it.
+     Wrapped in a named function so it can be documented.    */
+  function _exitToList() {
+    /* Final autosave before leaving */
+    if (_caseId && _entry) {
+      _persistState(_caseId, _entry);
+    }
+    Router.navigate('/cases');
   }
 
   /* ══════════════════════════════════════════════════════════
@@ -231,7 +351,6 @@ var CaseShell = (function () {
       console.error('[CaseShell] mount: case not found:', caseId);
       return false;
     }
-
     var entry = WorkflowRegistry.get(kase.workflow.workflowId);
     if (!entry) {
       console.error('[CaseShell] mount: unknown workflowId:', kase.workflow.workflowId);
@@ -242,16 +361,40 @@ var CaseShell = (function () {
     _entry  = entry;
     _kase   = kase;
 
-    _restoreState(kase, entry);      /* Step 1A */
-    _wrapNavFunctions(caseId, entry);/* Step 2  */
-    _wrapApplyParam(caseId, entry);  /* Step 3  */
-    _activateWorkflow(entry);        /* Step 1B */
+    _restoreState(kase, entry);        /* Step 1A */
+    _wrapNavFunctions(caseId, entry);  /* Step 2  */
+    _wrapApplyParam(caseId, entry);    /* Step 3  */
+    _activateWorkflow(entry);          /* Step 1B */
+    _injectHeader(kase, entry);        /* Step 4  */
+
+    /* Subscribe to events that require header refresh */
+    _onCaseUpdated = function (payload) {
+      if (payload && payload.caseId === caseId) {
+        _refreshHeaderStatus(caseId);
+      }
+    };
+    _onSectionVisited = function (payload) {
+      if (payload && payload.caseId === caseId) {
+        _refreshHeaderStatus(caseId);
+      }
+    };
+    EventBus.on('case:updated',    _onCaseUpdated);
+    EventBus.on('section:visited', _onSectionVisited);
 
     return true;
   }
 
   function unmount() {
-    _restoreApplyParam();    /* Step 3 — before nav, before page hide */
+    /* Step 4: teardown header first, then unsubscribe */
+    _removeHeader();
+    if (_onCaseUpdated) {
+      EventBus.off('case:updated',    _onCaseUpdated);
+      EventBus.off('section:visited', _onSectionVisited);
+      _onCaseUpdated    = null;
+      _onSectionVisited = null;
+    }
+
+    _restoreApplyParam();    /* Step 3 */
     _restoreNavFunctions();  /* Step 2 */
 
     var pageIds = ['workflow-page', 'abx-page', 'poly-page'];
@@ -277,7 +420,8 @@ var CaseShell = (function () {
     mount:        mount,
     unmount:      unmount,
     activeCaseId: activeCaseId,
-    activeEntry:  activeEntry
+    activeEntry:  activeEntry,
+    _exitToList:  _exitToList    /* exposed for inline onclick only */
   };
 
 }());
