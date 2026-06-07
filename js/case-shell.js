@@ -4,12 +4,12 @@
 
    Clinstrux · Clinical Decision Infrastructure
 
-   Implemented incrementally:
+   Steps implemented:
      Step 1  STATE RESTORE + WORKFLOW ACTIVATION  ✓
      Step 2  Section nav interception             ✓
      Step 3  Autosave (applyParam wrappers)       ✓
-     Step 4  Case context header + exit nav       ← this step
-     Step 5  Progress strip + Complete button
+     Step 4  Case context header + exit nav       ✓
+     Step 5  Progress strip + Complete button     ✓ ← this step
 
    Depends on (must be loaded before this file):
      event-bus.js, storage-adapter.js, patient-manager.js,
@@ -39,8 +39,13 @@ var CaseShell = (function () {
   var _origAbxApplyParam  = null;
   var _origPolyApplyParam = null;
 
-  /* Step 4: header element reference per page */
-  var _headerEl = null;
+  /* Step 4 + 5: injected shell element (header + strip wrapper) */
+  var _shellEl = null;
+
+  /* Step 5 EventBus handlers */
+  var _onCaseUpdated    = null;
+  var _onSectionVisited = null;
+  var _onCompleted      = null;
 
   /* ══════════════════════════════════════════════════════════
      STEP 1A — STATE RESTORE
@@ -175,139 +180,198 @@ var CaseShell = (function () {
   }
 
   /* ══════════════════════════════════════════════════════════
-     STEP 4 — CASE CONTEXT HEADER
-
-     Injects a thin bar as the FIRST child of the active
-     workflow page div (#workflow-page, #abx-page, #poly-page).
-     Sits between #global-nav and .dp-wrap in the visual stack.
-
-     Contains:
-       ← Cases          (exit — calls Router.navigate('/cases'))
-       Patient ref · Case ref · Workflow label · Status pill
-
-     Subscribes to case:updated to refresh the status pill
-     when CaseManager events fire (e.g. after updateSection
-     advances status from draft → in_progress).
-
-     Removed from DOM on unmount — leaves no trace.
+     SHARED HELPERS (Steps 4 + 5)
   ══════════════════════════════════════════════════════════ */
-
-  /* ── HTML escape ────────────────────────────────────────── */
 
   function _esc(str) {
     if (!str && str !== 0) return '';
     return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
-
-  /* ── Status pill HTML ───────────────────────────────────── */
 
   function _statusPill(status) {
-    var labels = {
-      draft:       'Draft',
-      in_progress: 'In Progress',
-      complete:    'Complete',
-      archived:    'Archived'
-    };
+    var labels = { draft:'Draft', in_progress:'In Progress',
+                   complete:'Complete', archived:'Archived' };
     return '<span class="clx-status-pill clx-status-' + _esc(status) + '">' +
-             (labels[status] || _esc(status)) +
-           '</span>';
+             (labels[status] || _esc(status)) + '</span>';
   }
 
-  /* ── Render the header HTML string ─────────────────────── */
+  /* ══════════════════════════════════════════════════════════
+     STEP 4 — CASE CONTEXT HEADER
+  ══════════════════════════════════════════════════════════ */
 
   function _buildHeaderHtml(kase, entry) {
     var patientLabel = kase.patient && kase.patient.identifier
-      ? _esc(kase.patient.identifier)
-      : 'Unknown patient';
+      ? _esc(kase.patient.identifier) : 'Unknown patient';
 
-    /* If a patientId is linked and PatientManager is available,
-       use the full name from PatientManager. Graceful fallback
-       if PatientManager doesn't have the record.               */
     if (kase.patientId &&
         typeof PatientManager !== 'undefined' &&
         typeof PatientManager.getPatient === 'function') {
       var pt = PatientManager.getPatient(kase.patientId);
-      if (pt) {
-        patientLabel = _esc(pt.firstName + ' ' + pt.lastName);
-      }
+      if (pt) patientLabel = _esc(pt.firstName + ' ' + pt.lastName);
     }
 
     return (
       '<div class="clx-case-header" id="clx-case-header-bar">' +
-
-        /* ← Cases exit button */
         '<button class="clx-case-header-back" onclick="CaseShell._exitToList()">' +
           '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" ' +
                'stroke="currentColor" stroke-width="2.5">' +
             '<path d="M19 12H5M12 19l-7-7 7-7"/>' +
-          '</svg>' +
-          'Cases' +
+          '</svg>Cases' +
         '</button>' +
-
         '<div class="clx-case-header-divider"></div>' +
-
-        /* Patient identifier */
         '<div class="clx-case-header-patient">' +
           '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" ' +
                'stroke="currentColor" stroke-width="2">' +
             '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>' +
             '<circle cx="12" cy="7" r="4"/>' +
-          '</svg>' +
-          patientLabel +
+          '</svg>' + patientLabel +
         '</div>' +
-
         '<div class="clx-case-header-sep"></div>' +
-
-        /* Case reference */
-        '<div class="clx-case-header-ref">' + _esc(kase.reference) + '</div>' +
-
+        '<div class="clx-case-header-ref">'      + _esc(kase.reference)  + '</div>' +
         '<div class="clx-case-header-sep"></div>' +
-
-        /* Workflow label */
-        '<div class="clx-case-header-workflow">' + _esc(entry.label) + '</div>' +
-
+        '<div class="clx-case-header-workflow">' + _esc(entry.label)     + '</div>' +
         '<div class="clx-case-header-sep"></div>' +
-
-        /* Status pill — given an id so _refreshHeader can update it */
-        '<div id="clx-case-header-status">' + _statusPill(kase.status) + '</div>' +
-
+        '<div id="clx-case-header-status">'      + _statusPill(kase.status) + '</div>' +
       '</div>'
     );
   }
 
-  /* ── Inject header into the workflow page ───────────────── */
+  /* ══════════════════════════════════════════════════════════
+     STEP 5 — PROGRESS STRIP + COMPLETE BUTTON
 
-  function _injectHeader(kase, entry) {
+     Renders a horizontal strip of section nodes beneath the
+     case header. Each node shows:
+       ● visited  — filled circle + label, clickable to jump
+       ◐ current  — highlighted circle + label
+       ○ pending  — empty circle + label (required) or
+                    ○ dashed (optional)
+
+     Complete Assessment button appears in the strip at the
+     right end. It is:
+       — disabled (greyed) when not all required sections visited
+       — enabled  when WorkflowRegistry.isCompletable() is true
+       — hidden   when case.status === 'complete'
+
+     The strip re-renders in place when section:visited or
+     case:updated fires for the active case. Re-render is done
+     by replacing innerHTML of #clx-progress-strip — a targeted
+     update that leaves the header above it untouched.
+  ══════════════════════════════════════════════════════════ */
+
+  function _buildStripHtml(kase, entry) {
+    var visited  = kase.workflow.visitedSections || [];
+    var current  = kase.workflow.currentSection  || null;
+    var sections = entry.sections;
+    var completable = WorkflowRegistry.isCompletable(entry.id, visited);
+    var isComplete  = kase.status === 'complete';
+
+    /* Section nodes */
+    var nodes = sections.map(function(s) {
+      var isVisited = visited.indexOf(s.id) !== -1;
+      var isCurrent = s.id === current;
+      var stateClass = isCurrent  ? 'clx-strip-node-current'
+                     : isVisited  ? 'clx-strip-node-visited'
+                     :              'clx-strip-node-pending';
+      var optClass   = s.required ? '' : ' clx-strip-node-optional';
+
+      /* Clicking a visited node re-navigates to that section via the nav function */
+      var clickable  = isVisited || isCurrent;
+      var onclick    = clickable
+        ? ' onclick="CaseShell._jumpToSection(\'' + _esc(s.domId) + '\')"'
+        : '';
+
+      return (
+        '<div class="clx-strip-node ' + stateClass + optClass + '"' + onclick + '>' +
+          '<div class="clx-strip-node-dot">' +
+            (isVisited || isCurrent
+              ? '<svg width="14" height="14" viewBox="0 0 14 14">' +
+                  '<circle cx="7" cy="7" r="6" fill="currentColor"/>' +
+                  (isVisited && !isCurrent
+                    ? '<path d="M4 7l2 2 4-4" stroke="#fff" stroke-width="1.5" ' +
+                      'stroke-linecap="round" stroke-linejoin="round" fill="none"/>'
+                    : '') +
+                '</svg>'
+              : '<svg width="14" height="14" viewBox="0 0 14 14">' +
+                  '<circle cx="7" cy="7" r="5.5" fill="none" stroke="currentColor" ' +
+                           'stroke-width="' + (s.required ? '1.5' : '1') + '"' +
+                           (s.required ? '' : ' stroke-dasharray="3 2"') + '/>' +
+                '</svg>') +
+          '</div>' +
+          '<div class="clx-strip-node-label">' + _esc(s.label) + '</div>' +
+        '</div>'
+      );
+    }).join('<div class="clx-strip-connector"></div>');
+
+    /* Complete button — hidden once complete */
+    var completeBtn = isComplete
+      ? '<div class="clx-strip-complete-done">' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" ' +
+               'stroke="currentColor" stroke-width="2.5">' +
+            '<path d="M20 6L9 17l-5-5"/>' +
+          '</svg>Complete' +
+        '</div>'
+      : '<button class="clx-strip-complete-btn' +
+          (completable ? '' : ' clx-strip-complete-btn-disabled') + '"' +
+          (completable ? ' onclick="CaseShell._completeCase()"' : ' disabled') + '>' +
+          'Complete Assessment' +
+        '</button>';
+
+    return (
+      '<div class="clx-progress-strip" id="clx-progress-strip">' +
+        '<div class="clx-strip-nodes">' + nodes + '</div>' +
+        '<div class="clx-strip-actions">' + completeBtn + '</div>' +
+      '</div>'
+    );
+  }
+
+  /* ── Inject the full shell (header + strip) ─────────────── */
+
+  function _injectShell(kase, entry) {
     var pageEl = document.getElementById(entry.pageId);
     if (!pageEl) {
-      console.warn('[CaseShell] pageId not found for header injection:', entry.pageId);
+      console.warn('[CaseShell] pageId not found:', entry.pageId);
       return;
     }
 
-    /* Remove any stale header from a previous session */
-    var stale = document.getElementById('clx-case-header-bar');
+    /* Remove any stale shell */
+    var stale = document.getElementById('clx-shell-wrapper');
     if (stale && stale.parentNode) stale.parentNode.removeChild(stale);
 
-    /* Create and prepend the header element */
     var wrapper = document.createElement('div');
-    wrapper.innerHTML = _buildHeaderHtml(kase, entry);
-    _headerEl = wrapper.firstChild;
+    wrapper.innerHTML =
+      '<div id="clx-shell-wrapper">' +
+        _buildHeaderHtml(kase, entry) +
+        _buildStripHtml(kase, entry) +
+      '</div>';
+    _shellEl = wrapper.firstChild;
 
-    /* insertBefore the first child of the page div */
     if (pageEl.firstChild) {
-      pageEl.insertBefore(_headerEl, pageEl.firstChild);
+      pageEl.insertBefore(_shellEl, pageEl.firstChild);
     } else {
-      pageEl.appendChild(_headerEl);
+      pageEl.appendChild(_shellEl);
     }
-
-    console.info('[CaseShell] Header injected into #' + entry.pageId);
+    console.info('[CaseShell] Shell injected into #' + entry.pageId);
   }
 
-  /* ── Refresh just the status pill (EventBus subscriber) ─── */
+  /* ── Re-render only the progress strip (not the header) ─── */
+
+  function _refreshStrip(caseId, entry) {
+    var stripEl = document.getElementById('clx-progress-strip');
+    if (!stripEl) return;
+    var kase = CaseManager.getCase(caseId);
+    if (!kase) return;
+    /* Replace the strip's own outerHTML equivalent via parent */
+    var parent = stripEl.parentNode;
+    if (!parent) return;
+    var tmp = document.createElement('div');
+    tmp.innerHTML = _buildStripHtml(kase, entry);
+    var newStrip = tmp.firstChild;
+    parent.replaceChild(newStrip, stripEl);
+  }
+
+  /* ── Refresh the status pill in the header ──────────────── */
 
   function _refreshHeaderStatus(caseId) {
     var statusEl = document.getElementById('clx-case-header-status');
@@ -317,24 +381,49 @@ var CaseShell = (function () {
     statusEl.innerHTML = _statusPill(kase.status);
   }
 
-  /* ── Remove header from DOM ─────────────────────────────── */
+  /* ── Remove the entire shell from DOM ───────────────────── */
 
-  function _removeHeader() {
-    if (_headerEl && _headerEl.parentNode) {
-      _headerEl.parentNode.removeChild(_headerEl);
+  function _removeShell() {
+    if (_shellEl && _shellEl.parentNode) {
+      _shellEl.parentNode.removeChild(_shellEl);
     }
-    _headerEl = null;
+    _shellEl = null;
   }
 
-  /* EventBus handler references (stored for clean teardown) */
-  var _onCaseUpdated    = null;
-  var _onSectionVisited = null;
+  /* ══════════════════════════════════════════════════════════
+     STEP 5 ACTIONS (called from inline onclick)
+  ══════════════════════════════════════════════════════════ */
 
-  /* ── Exit: save state, navigate to case list ────────────── */
-  /* Exposed on window so the inline onclick can reach it.
-     Wrapped in a named function so it can be documented.    */
+  /* Jump to a section by domId using the active workflow's nav function */
+  function _jumpToSection(domId) {
+    if (!_entry) return;
+    var navFn = window[_entry.navFn];
+    if (typeof navFn === 'function') {
+      navFn(domId, null);
+    }
+  }
+
+  /* Complete the case: final save, completeCase, navigate to /cases */
+  function _completeCase() {
+    if (!_caseId || !_entry) return;
+
+    /* Final autosave before completing */
+    _persistState(_caseId, _entry);
+
+    var liveState = window[_entry.stateVar];
+    var finalState = {};
+    if (liveState) {
+      var keys = Object.keys(liveState);
+      for (var i = 0; i < keys.length; i++) { finalState[keys[i]] = liveState[keys[i]]; }
+    }
+
+    CaseManager.completeCase(_caseId, finalState);
+    console.info('[CaseShell] Case completed:', _caseId);
+    /* Navigation triggered by the workflow:completed EventBus handler below */
+  }
+
+  /* Exit to case list with a final autosave */
   function _exitToList() {
-    /* Final autosave before leaving */
     if (_caseId && _entry) {
       _persistState(_caseId, _entry);
     }
@@ -365,44 +454,51 @@ var CaseShell = (function () {
     _wrapNavFunctions(caseId, entry);  /* Step 2  */
     _wrapApplyParam(caseId, entry);    /* Step 3  */
     _activateWorkflow(entry);          /* Step 1B */
-    _injectHeader(kase, entry);        /* Step 4  */
+    _injectShell(kase, entry);         /* Steps 4 + 5 */
 
-    /* Subscribe to events that require header refresh */
-    _onCaseUpdated = function (payload) {
-      if (payload && payload.caseId === caseId) {
-        _refreshHeaderStatus(caseId);
-      }
-    };
+    /* EventBus subscriptions for live refresh */
     _onSectionVisited = function (payload) {
-      if (payload && payload.caseId === caseId) {
-        _refreshHeaderStatus(caseId);
-      }
+      if (!payload || payload.caseId !== caseId) return;
+      _refreshStrip(caseId, entry);
+      _refreshHeaderStatus(caseId);
     };
-    EventBus.on('case:updated',    _onCaseUpdated);
-    EventBus.on('section:visited', _onSectionVisited);
+    _onCaseUpdated = function (payload) {
+      if (!payload || payload.caseId !== caseId) return;
+      _refreshStrip(caseId, entry);
+      _refreshHeaderStatus(caseId);
+    };
+    _onCompleted = function (payload) {
+      if (!payload || payload.caseId !== caseId) return;
+      /* Navigate to case list after a brief moment so the strip
+         can re-render to show the "Complete" done state first.  */
+      setTimeout(function() { Router.navigate('/cases'); }, 400);
+    };
+
+    EventBus.on('section:visited',   _onSectionVisited);
+    EventBus.on('case:updated',      _onCaseUpdated);
+    EventBus.on('workflow:completed', _onCompleted);
 
     return true;
   }
 
   function unmount() {
-    /* Step 4: teardown header first, then unsubscribe */
-    _removeHeader();
-    if (_onCaseUpdated) {
-      EventBus.off('case:updated',    _onCaseUpdated);
-      EventBus.off('section:visited', _onSectionVisited);
-      _onCaseUpdated    = null;
-      _onSectionVisited = null;
-    }
+    /* Teardown subscriptions */
+    if (_onSectionVisited) { EventBus.off('section:visited',   _onSectionVisited); _onSectionVisited = null; }
+    if (_onCaseUpdated)    { EventBus.off('case:updated',      _onCaseUpdated);    _onCaseUpdated    = null; }
+    if (_onCompleted)      { EventBus.off('workflow:completed', _onCompleted);      _onCompleted      = null; }
 
-    _restoreApplyParam();    /* Step 3 */
-    _restoreNavFunctions();  /* Step 2 */
+    /* Remove injected DOM */
+    _removeShell();
 
-    var pageIds = ['workflow-page', 'abx-page', 'poly-page'];
-    pageIds.forEach(function (id) {
+    /* Restore wrapped functions */
+    _restoreApplyParam();
+    _restoreNavFunctions();
+
+    /* Hide workflow pages, restore app-view */
+    ['workflow-page', 'abx-page', 'poly-page'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) el.style.display = 'none';
     });
-
     var appView = document.getElementById('app-view');
     if (appView) appView.style.display = 'block';
 
@@ -417,11 +513,13 @@ var CaseShell = (function () {
   function activeEntry()  { return _entry;  }
 
   return {
-    mount:        mount,
-    unmount:      unmount,
-    activeCaseId: activeCaseId,
-    activeEntry:  activeEntry,
-    _exitToList:  _exitToList    /* exposed for inline onclick only */
+    mount:          mount,
+    unmount:        unmount,
+    activeCaseId:   activeCaseId,
+    activeEntry:    activeEntry,
+    _exitToList:    _exitToList,     /* inline onclick */
+    _jumpToSection: _jumpToSection,  /* inline onclick */
+    _completeCase:  _completeCase    /* inline onclick */
   };
 
 }());
