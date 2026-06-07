@@ -3020,3 +3020,176 @@ input[type="range"]{accent-color:var(--accent);}
 /* ════════════════════════════════════════════════════════════
    END PHASE 3 STEP 4 STYLES
 ════════════════════════════════════════════════════════════ */
+
+
+/* ════════════════════════════════════════════════════════════
+   PHASE 3 STEP 5 — PROGRESS STRIP + COMPLETE BUTTON
+   Appended block. All new classes prefixed clx-strip- or
+   clx-progress-. No existing rules modified.
+════════════════════════════════════════════════════════════ */
+
+/* ── Shell wrapper (contains header + strip) ────────────────── */
+
+#clx-shell-wrapper {
+  position: sticky;
+  top: 48px;        /* flush below global-nav */
+  z-index: 150;
+  flex-shrink: 0;
+  /* Stacks header (38px) + strip (40px) as a single sticky block */
+}
+
+/* Override Step 4 sticky on the header — it's now managed by wrapper */
+#clx-shell-wrapper .clx-case-header {
+  position: relative;
+  top: auto;
+  z-index: auto;
+}
+
+/* ── Progress strip container ───────────────────────────────── */
+
+.clx-progress-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  padding: 0 20px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;          /* Firefox */
+}
+
+.clx-progress-strip::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+/* ── Section nodes row ──────────────────────────────────────── */
+
+.clx-strip-nodes {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Single section node ────────────────────────────────────── */
+
+.clx-strip-node {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.12s;
+}
+
+/* Visited and current nodes are clickable */
+.clx-strip-node-visited,
+.clx-strip-node-current {
+  cursor: pointer;
+}
+
+.clx-strip-node-visited:hover,
+.clx-strip-node-current:hover {
+  background: rgba(30, 106, 191, 0.06);
+}
+
+/* Dot icon */
+.clx-strip-node-dot {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Node label */
+.clx-strip-node-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+}
+
+/* State: visited */
+.clx-strip-node-visited .clx-strip-node-dot { color: var(--green); }
+.clx-strip-node-visited .clx-strip-node-label { color: var(--green); }
+
+/* State: current */
+.clx-strip-node-current .clx-strip-node-dot { color: var(--accent); }
+.clx-strip-node-current .clx-strip-node-label { color: var(--accent); }
+
+/* State: pending required */
+.clx-strip-node-pending .clx-strip-node-dot { color: var(--border); }
+.clx-strip-node-pending .clx-strip-node-label { color: var(--muted); }
+
+/* State: pending optional (dashed) */
+.clx-strip-node-pending.clx-strip-node-optional .clx-strip-node-dot { color: var(--border); }
+.clx-strip-node-pending.clx-strip-node-optional .clx-strip-node-label {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ── Connector line between nodes ───────────────────────────── */
+
+.clx-strip-connector {
+  width: 20px;
+  height: 1px;
+  background: var(--border);
+  flex-shrink: 0;
+  margin: 0 2px;
+}
+
+/* ── Actions area (Complete button) ─────────────────────────── */
+
+.clx-strip-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.clx-strip-complete-btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 5px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s, opacity 0.12s;
+}
+
+.clx-strip-complete-btn:hover:not(:disabled) {
+  background: #1a6abf;
+}
+
+.clx-strip-complete-btn-disabled,
+.clx-strip-complete-btn:disabled {
+  background: var(--bg);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+/* Done state — shown after case is marked complete */
+.clx-strip-complete-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--green);
+  padding: 5px 10px;
+  background: rgba(42, 157, 110, 0.07);
+  border: 1px solid rgba(42, 157, 110, 0.2);
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+/* ════════════════════════════════════════════════════════════
+   END PHASE 3 STEP 5 STYLES
+════════════════════════════════════════════════════════════ */
