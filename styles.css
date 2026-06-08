@@ -3567,3 +3567,127 @@ input[type="range"]{accent-color:var(--accent);}
 /* ════════════════════════════════════════════════════════════
    END PHASE 4A STYLES
 ════════════════════════════════════════════════════════════ */
+
+
+/* ════════════════════════════════════════════════════════════
+   PHASE 4B — NEW CASE PATIENT LINKING
+   All new classes prefixed clx-nc-.
+   No existing rules modified.
+════════════════════════════════════════════════════════════ */
+
+/* ── Patient confirmation card (Step 1B) ───────────────────── */
+
+.clx-nc-patient-card {
+  background: var(--white);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.clx-nc-patient-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--accent-dim);
+  border-bottom: 1px solid var(--accent-border);
+}
+
+.clx-nc-patient-card-icon {
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.clx-nc-patient-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.clx-nc-patient-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.clx-nc-patient-card-body {
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.clx-nc-patient-field {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.clx-nc-field-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--muted);
+  min-width: 90px;
+  flex-shrink: 0;
+}
+
+.clx-nc-field-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.clx-nc-pill {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 9px;
+  border-radius: 20px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.clx-nc-pill-empty {
+  font-size: 11.5px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.clx-nc-field-notes {
+  font-size: 12.5px;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+/* Setting group in linked-patient step 1 */
+.clx-nc-setting-group {
+  margin-top: 4px;
+}
+
+/* ── Linked badge in step 2 summary banner ─────────────────── */
+
+.clx-nc-linked-badge {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* ════════════════════════════════════════════════════════════
+   END PHASE 4B STYLES
+════════════════════════════════════════════════════════════ */
