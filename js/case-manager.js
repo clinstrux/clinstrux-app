@@ -102,8 +102,9 @@ var CaseManager = (function() {
 
   /* Build a complete new Case object with all fields initialised.
      patientData: { identifier, age, setting, referralSource, clinicalContext }
-     workflowId: 'oa' | 'abx' | 'poly'                                         */
-  function _buildCase(patientData, workflowId, reference) {
+     workflowId: 'oa' | 'abx' | 'poly'
+     patientId:  optional pt_* reference from PatientManager              */
+  function _buildCase(patientData, workflowId, reference, patientId) {
     var entry = WorkflowRegistry.get(workflowId);
     if (!entry) {
       throw new Error('[CaseManager] Unknown workflowId: ' + workflowId);
@@ -134,7 +135,7 @@ var CaseManager = (function() {
       },
 
       /* ── Patient context ───────────────────────────────── */
-      patientId: null,              /* pt_* link populated in Phase 1B    */
+      patientId: patientId || null,    /* pt_* from PatientManager, or null */
       patient: {
         identifier:     patientData.identifier     || '',
         age:            patientData.age            || null,
@@ -177,11 +178,11 @@ var CaseManager = (function() {
 
   /* ── createCase ─────────────────────────────────────────── */
 
-  function createCase(patientData, workflowId) {
+  function createCase(patientData, workflowId, patientId) {
     var store = _load();
     store.meta.caseCounter += 1;
     var reference = _generateReference(store.meta.caseCounter);
-    var newCase = _buildCase(patientData, workflowId, reference);
+    var newCase = _buildCase(patientData, workflowId, reference, patientId || null);
     store.cases.push(newCase);
     _save(store);
     EventBus.emit('case:created', { caseId: newCase.id, workflowId: workflowId });
