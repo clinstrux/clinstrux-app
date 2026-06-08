@@ -152,8 +152,20 @@ var CaseManager = (function() {
         completedAt:     null,
         currentSection:  null,
         visitedSections: [],
-        /* Deep copy of the workflow's default state */
-        state: JSON.parse(JSON.stringify(entry.defaultState))
+        /* Deep copy of the workflow's default state.
+           If the patient supplied a demographic age and the workflow
+           state contains an age parameter, seed it from the patient
+           rather than the registry default. Only applied on new case
+           creation — existing cases are never touched here.          */
+        state: (function() {
+          var s = JSON.parse(JSON.stringify(entry.defaultState));
+          var demographicAge = patientData && parseInt(patientData.age, 10);
+          if (s.hasOwnProperty('age') && demographicAge && !isNaN(demographicAge) &&
+              demographicAge >= 18 && demographicAge <= 120) {
+            s.age = demographicAge;
+          }
+          return s;
+        }())
       },
 
       /* ── Assessment block ──────────────────────────────── */
