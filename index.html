@@ -895,7 +895,7 @@
       <div class="dp-scenario-title">Chronic OA pain — High GI risk</div>
       <div class="dp-scenario-meta">
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        68 y/o · Female · May 2026
+        <span id="dyn-patient-meta">68 y/o · Female · May 2026</span>
       </div>
       <div class="dp-scenario-status">Active session</div>
     </div>
@@ -1104,7 +1104,7 @@
     <div class="dp-topbar">
       <div class="dp-topbar-meta">
         <div class="dp-topbar-case">
-          Case ID <span class="dp-topbar-case-id">CS-2026-00841</span>
+          Case ID <span class="dp-topbar-case-id" id="dyn-case-ref-topbar">CS-2026-00841</span>
         </div>
         <div class="dp-topbar-sep"></div>
         <div class="dp-topbar-status">Decision active</div>
@@ -1184,7 +1184,7 @@
           <div class="pi-title" id="pi-title">Medication Review — Analgesic Safety Assessment</div>
         </div>
         <div class="pi-header-right">
-          <div class="pi-case-ref">CS-2026-00841</div>
+          <div class="pi-case-ref" id="dyn-case-ref-pi">CS-2026-00841</div>
         </div>
       </div>
 
@@ -1368,7 +1368,7 @@
             <span class="csl-status-dot"></span>
             Intervention ready
           </div>
-          <div class="csl-case-ref">CS-2026-00841</div>
+          <div class="csl-case-ref" id="dyn-case-ref-csl">CS-2026-00841</div>
         </div>
       </div>
 
@@ -1831,7 +1831,7 @@
               </svg>
             </div>
             <div>
-              <div class="si-patient-name">68-year-old female</div>
+              <div class="si-patient-name" id="dyn-patient-name-si">68-year-old female</div>
               <div class="si-patient-sub">Chronic bilateral knee osteoarthritis · Long-term pain management · Activity increasingly limited</div>
               <div class="si-patient-badges">
                 <span class="si-patient-badge si-pbadge-red">High GI risk</span>
@@ -2542,12 +2542,13 @@
                 </div>
               </div>
               <div class="cn-editor-body" contenteditable="true">
-                <h4>Patient context — May 17, 2026 · M. Evteev</h4>
+                <h4 id="dyn-cn-header">Clinical notes — <span id="dyn-cn-ref">Case</span></h4>
                 <ul>
-                  <li>68-year-old female presenting with progressive bilateral knee pain over 6 months. Pain now 6/10 at rest and 8/10 with movement. Functional status declining — reports stair use becoming impractical and walking limited to &lt;10 minutes.</li>
-                  <li>Peptic ulcer 2 years ago — healed, no active GI symptoms. Currently on pantoprazole 40 mg; GI symptom-free at presentation. GI risk elevated by ulcer history — any NSAID use carries meaningful bleeding risk.</li>
-                  <li>Renal function: eGFR 58 ml/min/1.73m² (CKD Stage G2 — mild impairment). Baseline creatinine documented. eGFR trajectory stable over 6 months. NSAID use would require renal monitoring; trajectory to &lt;45 would contraindicate NSAIDs entirely.</li>
-                  <li>Cardiovascular: controlled hypertension on amlodipine 5 mg. BP 128/76 at today's visit. Previous diclofenac trial caused sustained BP elevation (+18 mmHg systolic) — documented, relevant to escalation decisions.</li>
+                  <li id="dyn-cn-patient-line">Patient context: enter clinical background here.</li>
+                  <li>Relevant history: document comorbidities, prior treatments, and contraindications.</li>
+                  <li>Functional status: note activity limitations and patient goals.</li>
+                  <li>Current medications: record relevant concomitant drugs.</li>
+                </ul>
                 </ul>
                 <h4>Functional status &amp; activity limitations</h4>
                 <ul>
@@ -3185,7 +3186,7 @@
           <div class="renal-cascade-row renal-active-row" id="renal-row-4559">
             <div class="renal-cascade-cell renal-cascade-egfr egfr-current">45–59 mL/min <span class="renal-active-marker" id="renal-active-marker">CURRENT</span></div>
             <div class="renal-cascade-cell text-amber-bold">G3a (Mild–Moderate)</div>
-            <div class="renal-cascade-cell renal-cascade-implications renal-cell-active">Acetaminophen: reduce to max 3 g/day (older adult ceiling — applies here at age 68 + eGFR 58). Oral NSAIDs: avoid unless unavoidable — prostaglandin-mediated renal perfusion increasingly dependent on baseline function. Topical NSAIDs: acceptable with close monitoring. eGFR trajectory monitoring every 6 weeks.</div>
+            <div class="renal-cascade-cell renal-cascade-implications renal-cell-active" id="dyn-renal-age-note">Acetaminophen: reduce to max 3 g/day (older adult ceiling — applies here at age <span id="dyn-renal-age">68</span> + eGFR <span id="dyn-renal-egfr">58</span>). Oral NSAIDs: avoid unless unavoidable — prostaglandin-mediated renal perfusion increasingly dependent on baseline function. Topical NSAIDs: acceptable with close monitoring. eGFR trajectory monitoring every 6 weeks.</div>
             <div class="renal-cascade-cell renal-cascade-action text-amber-bold">Active dose ceiling: APAP ≤3 g/day. NSAID avoidance recommended. Monitor eGFR 6-weekly.</div>
           </div>
           <div class="renal-cascade-row" id="renal-row-3044">
