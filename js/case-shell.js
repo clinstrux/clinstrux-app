@@ -431,6 +431,72 @@ var CaseShell = (function () {
   }
 
   /* ══════════════════════════════════════════════════════════
+     DYNAMIC FIELD POPULATION
+     Writes case/patient data into the workflow page DOM
+     elements that previously held hardcoded demo values.
+     Called once on mount, after _activateWorkflow shows the
+     page. Only updates elements that exist in the active
+     workflow page — OA-specific ids are safe to target
+     because ABX/POLY pages don't contain them.
+  ══════════════════════════════════════════════════════════ */
+
+  function _updateWorkflowDynamic(kase) {
+    /* Resolve patient display values */
+    var identifier = kase.patient && kase.patient.identifier
+      ? kase.patient.identifier : '—';
+
+    /* Use full name from PatientManager if patientId is linked */
+    if (kase.patientId &&
+        typeof PatientManager !== 'undefined' &&
+        typeof PatientManager.getPatient === 'function') {
+      var pt = PatientManager.getPatient(kase.patientId);
+      if (pt) identifier = pt.firstName + ' ' + pt.lastName;
+    }
+
+    var age = (kase.patient && kase.patient.age) ? kase.patient.age : '—';
+    var ref = kase.reference || '—';
+
+    /* ── Batch 1 (lines 898, 1107, 1187, 1371, 1834, 2547, 3188) ── */
+
+    /* Line 898 — dp-scenario-meta */
+    _setText('dyn-patient-meta', age + ' y/o · ' + _esc(kase.patient.setting || ''));
+
+    /* Line 1107 — dp-topbar case id */
+    _setText('dyn-case-ref-topbar', ref);
+
+    /* Line 1187 — pi-case-ref */
+    _setText('dyn-case-ref-pi', ref);
+
+    /* Line 1371 — csl-case-ref */
+    _setText('dyn-case-ref-csl', ref);
+
+    /* Line 1834 — si-patient-name (scenario section) */
+    _setText('dyn-patient-name-si', age + '-year-old · ' + _esc(identifier));
+
+    /* Line 2547 — contenteditable clinical notes header + first line */
+    _setText('dyn-cn-ref', ref);
+    _setText('dyn-cn-patient-line',
+      'Patient: ' + _esc(identifier) +
+      (age !== '—' ? ', ' + age + ' years old' : '') +
+      (kase.patient.setting ? ', ' + _esc(kase.patient.setting) : '') +
+      '. Enter clinical background here.');
+
+    /* Line 3188 — renal cascade age + eGFR inline values
+       These read from the live workflow state (P.age, P.egfr)
+       which has already been restored by _restoreState above.   */
+    if (typeof window.P !== 'undefined') {
+      _setText('dyn-renal-age',  window.P.age  !== undefined ? String(window.P.age)  : String(age));
+      _setText('dyn-renal-egfr', window.P.egfr !== undefined ? String(window.P.egfr) : '—');
+    }
+  }
+
+  /* Write textContent to an element by id — safe no-op if not found */
+  function _setText(id, text) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
+
+  /* ══════════════════════════════════════════════════════════
      PUBLIC API
   ══════════════════════════════════════════════════════════ */
 
@@ -454,6 +520,7 @@ var CaseShell = (function () {
     _wrapNavFunctions(caseId, entry);  /* Step 2  */
     _wrapApplyParam(caseId, entry);    /* Step 3  */
     _activateWorkflow(entry);          /* Step 1B */
+    _updateWorkflowDynamic(kase);      /* Batch 1 dynamic fields */
     _injectShell(kase, entry);         /* Steps 4 + 5 */
 
     /* EventBus subscriptions for live refresh */
