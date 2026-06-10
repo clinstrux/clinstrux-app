@@ -488,12 +488,64 @@ var CaseShell = (function () {
       _setText('dyn-renal-age',  window.P.age  !== undefined ? String(window.P.age)  : String(age));
       _setText('dyn-renal-egfr', window.P.egfr !== undefined ? String(window.P.egfr) : '—');
     }
+
+    /* ── Handoff batch (lines 3544–4135) ───────────────────── */
+
+    /* Shared values used across all six handoff documents */
+    var patientSummary = age + ' y/o · ' + _esc(identifier);
+
+    /* Line 3544 — hf-status-strip right (across all docs) */
+    _setText('dyn-hf-status-right', ref + ' · ' + _escDate() + ' · M. Evteev');
+
+    /* Document subtitles — each keeps its fixed descriptor,
+       with the demo case ref replaced by the real reference  */
+    _setText('dyn-hf-sub-pharmacist',
+      'Case ' + ref + ' · ' + patientSummary);
+    _setText('dyn-hf-sub-monitoring',
+      'Case ' + ref + ' · For incoming pharmacist / clinical team');
+    _setText('dyn-hf-sub-escalation',
+      'Case ' + ref + ' · For supervising physician / team lead');
+    _setText('dyn-hf-sub-attending',
+      'Case ' + ref + ' · Concise summary for physician review');
+    _setText('dyn-hf-sub-risk',
+      'Case ' + ref + ' · Analgesic risk profile — structured for safety review');
+    _setText('dyn-hf-sub-rationale',
+      'Case ' + ref + ' · Documented reasoning for analgesic selection decision');
+    _setText('dyn-hf-sub-followup',
+      'Case ' + ref + ' · For next clinical contact — structured review agenda');
+
+    /* Signature dates */
+    _setText('dyn-hf-sigdate-pharmacist', 'Case ' + ref + ' · ' + _escDate());
+    _setText('dyn-hf-sigdate-escalation', 'Case ' + ref + ' · ' + _escDate());
+    _setText('dyn-hf-sigdate-attending',  ref + ' · ' + _escDate());
+    _setText('dyn-hf-sigdate-risk',       ref + ' · ' + _escDate());
+    _setText('dyn-hf-sigdate-rationale',  ref + ' · ' + _escDate());
+    _setText('dyn-hf-sigdate-followup',   'Next contact: Week 2 · ' + ref);
+
+    /* Line 3811 — Attending brief patient context line */
+    _setText('dyn-hf-patient-context',
+      _esc(identifier) +
+      (age !== '—' ? ', ' + age + ' years old' : '') +
+      '. Chronic OA pain. ' +
+      (kase.patient.clinicalContext
+        ? _esc(kase.patient.clinicalContext)
+        : 'Document clinical context here.'));
+
+    /* Line 4135 — hf-meta-card patient summary */
+    _setText('dyn-hf-meta-patient', patientSummary);
   }
 
   /* Write textContent to an element by id — safe no-op if not found */
   function _setText(id, text) {
     var el = document.getElementById(id);
     if (el) el.textContent = text;
+  }
+
+  /* Short month-year string e.g. "Jun 2026" */
+  function _escDate() {
+    var d = new Date();
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return months[d.getMonth()] + ' ' + d.getFullYear();
   }
 
   /* ══════════════════════════════════════════════════════════
