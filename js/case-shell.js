@@ -535,6 +535,46 @@ var CaseShell = (function () {
     _setText('dyn-hf-meta-patient', patientSummary);
   }
 
+  /* ── ABX dynamic fields ────────────────────────────────── */
+
+  function _updateAbxDynamic(kase) {
+    var identifier = kase.patient && kase.patient.identifier ? kase.patient.identifier : '—';
+    if (kase.patientId && typeof PatientManager !== 'undefined' &&
+        typeof PatientManager.getPatient === 'function') {
+      var pt = PatientManager.getPatient(kase.patientId);
+      if (pt) identifier = pt.firstName + ' ' + pt.lastName;
+    }
+    var age = (kase.patient && kase.patient.age) ? kase.patient.age : '—';
+    var ref = kase.reference || '—';
+    var setting = (kase.patient && kase.patient.setting) ? kase.patient.setting : '';
+
+    _setText('dyn-abx-patient-meta',    age + ' y/o · ' + _esc(setting));
+    _setText('dyn-abx-case-ref-topbar', ref);
+    _setText('dyn-abx-patient-name',    age + '-year-old · ' + _esc(identifier));
+    _setText('dyn-abx-patient-sub',
+      _esc(setting) +
+      (kase.patient.clinicalContext ? ' · ' + _esc(kase.patient.clinicalContext) : '') +
+      (kase.patient.referralSource  ? ' · ' + _esc(kase.patient.referralSource)  : ''));
+  }
+
+  /* ── POLY dynamic fields ───────────────────────────────── */
+
+  function _updatePolyDynamic(kase) {
+    var identifier = kase.patient && kase.patient.identifier ? kase.patient.identifier : '—';
+    if (kase.patientId && typeof PatientManager !== 'undefined' &&
+        typeof PatientManager.getPatient === 'function') {
+      var pt = PatientManager.getPatient(kase.patientId);
+      if (pt) identifier = pt.firstName + ' ' + pt.lastName;
+    }
+    var age = (kase.patient && kase.patient.age) ? kase.patient.age : '—';
+    var ref = kase.reference || '—';
+    var setting = (kase.patient && kase.patient.setting) ? kase.patient.setting : '';
+
+    _setText('dyn-poly-patient-meta',    age + ' y/o · ' + _esc(setting));
+    _setText('dyn-poly-case-ref-topbar', ref);
+    _setText('dyn-poly-patient-name',    age + '-year-old · ' + _esc(identifier));
+  }
+
   /* Write textContent to an element by id — safe no-op if not found */
   function _setText(id, text) {
     var el = document.getElementById(id);
@@ -572,7 +612,9 @@ var CaseShell = (function () {
     _wrapNavFunctions(caseId, entry);  /* Step 2  */
     _wrapApplyParam(caseId, entry);    /* Step 3  */
     _activateWorkflow(entry);          /* Step 1B */
-    _updateWorkflowDynamic(kase);      /* Batch 1 dynamic fields */
+    _updateWorkflowDynamic(kase);      /* OA dynamic fields (Batch 1 + Handoff) */
+    if (entry.id === 'abx')  _updateAbxDynamic(kase);   /* ABX dynamic fields */
+    if (entry.id === 'poly') _updatePolyDynamic(kase);  /* POLY dynamic fields */
     _injectShell(kase, entry);         /* Steps 4 + 5 */
 
     /* EventBus subscriptions for live refresh */
