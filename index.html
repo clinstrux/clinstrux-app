@@ -5010,16 +5010,8 @@
 
     <div class="dp-risk-strip">
       <div class="dp-risk-strip-row">
-        <span class="dp-risk-dot dp-risk-dot-red"></span>
-        <span class="dp-risk-text">11 concurrent medications</span>
-      </div>
-      <div class="dp-risk-strip-row">
-        <span class="dp-risk-dot dp-risk-dot-red"></span>
-        <span class="dp-risk-text">Falls risk: elevated</span>
-      </div>
-      <div class="dp-risk-strip-row">
-        <span class="dp-risk-dot dp-risk-dot-amber"></span>
-        <span class="dp-risk-text">Anticholinergic burden: high</span>
+        <span class="dp-risk-dot"></span>
+        <span class="dp-risk-text">Medication profile not yet entered</span>
       </div>
     </div>
 
@@ -5112,43 +5104,43 @@
           <!-- Num Meds -->
           <div class="abx-param-card" id="poly-p-meds" onclick="polyOpenPopover('meds', event)">
             <div class="abx-param-label">Total Medications</div>
-            <div class="abx-param-value" id="poly-val-meds">11</div>
-            <div class="abx-param-status" id="poly-status-meds">Hyper-polypharmacy</div>
+            <div class="abx-param-value" id="poly-val-meds">—</div>
+            <div class="abx-param-status" id="poly-status-meds">Not entered</div>
             <button class="ip-edit-btn">Edit ↗</button>
           </div>
           <!-- High-risk meds -->
           <div class="abx-param-card" id="poly-p-highrisk" onclick="polyOpenPopover('highrisk', event)">
             <div class="abx-param-label">High-Risk Medications</div>
-            <div class="abx-param-value" id="poly-val-highrisk">3</div>
-            <div class="abx-param-status" id="poly-status-highrisk">Warfarin · opioid · hypnotic</div>
+            <div class="abx-param-value" id="poly-val-highrisk">—</div>
+            <div class="abx-param-status" id="poly-status-highrisk">Not entered</div>
             <button class="ip-edit-btn">Edit ↗</button>
           </div>
           <!-- Interactions -->
           <div class="abx-param-card" id="poly-p-interactions" onclick="polyOpenPopover('interactions', event)">
             <div class="abx-param-label">Drug Interactions</div>
-            <div class="abx-param-value" id="poly-val-interactions">4</div>
-            <div class="abx-param-status" id="poly-status-interactions">2 clinically significant</div>
+            <div class="abx-param-value" id="poly-val-interactions">—</div>
+            <div class="abx-param-status" id="poly-status-interactions">Not entered</div>
             <button class="ip-edit-btn">Edit ↗</button>
           </div>
           <!-- Duplicate therapy -->
           <div class="abx-param-card" id="poly-p-duplicate" onclick="polyOpenPopover('duplicate', event)">
             <div class="abx-param-label">Duplicate Therapy</div>
-            <div class="abx-param-value" id="poly-val-duplicate">Yes</div>
-            <div class="abx-param-status" id="poly-status-duplicate">Dual antihypertensive overlap</div>
+            <div class="abx-param-value" id="poly-val-duplicate">—</div>
+            <div class="abx-param-status" id="poly-status-duplicate">Not entered</div>
             <button class="ip-edit-btn">Edit ↗</button>
           </div>
           <!-- Anticholinergic burden -->
           <div class="abx-param-card abx-param-wide" id="poly-p-ach" onclick="polyOpenPopover('ach', event)">
             <div class="abx-param-label">Anticholinergic Burden (ACB Score)</div>
-            <div class="abx-param-value" id="poly-val-ach">5</div>
-            <div class="abx-param-status" id="poly-status-ach">High — oxybutynin + amitriptyline + promethazine</div>
+            <div class="abx-param-value" id="poly-val-ach">—</div>
+            <div class="abx-param-status" id="poly-status-ach">Not entered</div>
             <button class="ip-edit-btn">Edit ↗</button>
           </div>
           <!-- Falls risk -->
           <div class="abx-param-card abx-param-wide" id="poly-p-falls" onclick="polyOpenPopover('falls', event)">
             <div class="abx-param-label">Falls Risk (Medication-Related)</div>
-            <div class="abx-param-value" id="poly-val-falls">High</div>
-            <div class="abx-param-status" id="poly-status-falls">Opioid + hypnotic + antihypertensive</div>
+            <div class="abx-param-value" id="poly-val-falls">—</div>
+            <div class="abx-param-status" id="poly-status-falls">Not entered</div>
             <button class="ip-edit-btn">Edit ↗</button>
           </div>
         </div>
@@ -5347,37 +5339,37 @@
               <div class="css-block-title">Medication Optimisation Review — May 2026</div>
             </div>
             <div class="css-block-head-right">
-              <div class="css-overall-badge css-badge-red" id="poly-css-badge">
-                <span class="css-overall-dot" style="background:var(--red);"></span>
-                <span id="poly-css-badge-label">High burden — review required</span>
+              <div class="css-overall-badge" id="poly-css-badge">
+                <span class="css-overall-dot"></span>
+                <span id="poly-css-badge-label">Not assessed</span>
               </div>
             </div>
           </div>
           <div class="css-grid" style="grid-template-columns: repeat(4, 1fr);">
             <div class="css-metric">
               <div class="css-metric-label">Medication Burden</div>
-              <div class="css-metric-value" id="poly-m-burden">Hyper-polypharmacy</div>
-              <div class="css-metric-sub" id="poly-m-burden-sub">11 medications · ≥10 threshold</div>
+              <div class="css-metric-value" id="poly-m-burden">—</div>
+              <div class="css-metric-sub" id="poly-m-burden-sub">Enter medication count</div>
             </div>
             <div class="css-metric">
               <div class="css-metric-label">Anticholinergic Load</div>
-              <div class="css-metric-value" id="poly-m-ach">High (ACB 5)</div>
-              <div class="css-metric-sub" id="poly-m-ach-sub">Threshold ≥3 — cognitive risk</div>
+              <div class="css-metric-value" id="poly-m-ach">—</div>
+              <div class="css-metric-sub" id="poly-m-ach-sub">Not assessed</div>
             </div>
             <div class="css-metric">
               <div class="css-metric-label">Falls Risk</div>
-              <div class="css-metric-value" id="poly-m-falls">Elevated</div>
-              <div class="css-metric-sub" id="poly-m-falls-sub">3 FRIDs · opioid + hypnotic + AHT</div>
+              <div class="css-metric-value" id="poly-m-falls">—</div>
+              <div class="css-metric-sub" id="poly-m-falls-sub">Not assessed</div>
             </div>
             <div class="css-metric" style="border-right:none;">
               <div class="css-metric-label">Interaction Risk</div>
-              <div class="css-metric-value" id="poly-m-interactions">Moderate–High</div>
-              <div class="css-metric-sub" id="poly-m-interactions-sub">4 interactions · 2 significant</div>
+              <div class="css-metric-value" id="poly-m-interactions">—</div>
+              <div class="css-metric-sub" id="poly-m-interactions-sub">Not assessed</div>
             </div>
           </div>
           <div class="css-assessment-row">
             <div class="css-assessment-label">Overall Assessment</div>
-            <div class="css-assessment-text" id="poly-overall-text">Patient carries a high medication burden with eleven concurrent agents including multiple high-risk medications and a significantly elevated anticholinergic load. The current regimen presents compound risk across falls, cognition, serotonin toxicity, and anticoagulation. Structured deprescribing review is indicated.</div>
+            <div class="css-assessment-text" id="poly-overall-text">Enter the total medication count to begin the polypharmacy assessment. Additional parameters will refine the output as they are entered.</div>
           </div>
         </div>
 
@@ -5417,25 +5409,22 @@
 
         <!-- Primary recommendation -->
         <div class="ds-primary">
-          <div class="ds-primary-eyebrow" id="poly-rec-eyebrow">Pharmacist recommendation · Medication review May 2026</div>
+          <div class="ds-primary-eyebrow" id="poly-rec-eyebrow">Pharmacist recommendation</div>
           <div class="ds-primary-rec">
-            <div class="ds-primary-drug" id="poly-rec-action">Structured<br>Deprescribing Review</div>
-            <div class="ds-primary-state" id="poly-rec-state">Urgent — multiple targets identified</div>
+            <div class="ds-primary-drug" id="poly-rec-action">Not assessed</div>
+            <div class="ds-primary-state" id="poly-rec-state">Enter medication profile to generate recommendation</div>
           </div>
-          <div class="ds-primary-rationale" id="poly-rec-rationale">The current regimen carries compound risk across multiple axes — elevated anticholinergic burden, significant falls risk, a clinically important serotonin interaction, and duplicate antihypertensive therapy. Three medications have been identified as primary deprescribing candidates (oxybutynin, zopiclone, amitriptyline) alongside one urgent interaction requiring management. A structured, stepwise review is indicated — addressing the highest-risk agents first while monitoring for symptom rebound.</div>
+          <div class="ds-primary-rationale" id="poly-rec-rationale">Complete the medication profile in Step 1 to generate a prioritised deprescribing recommendation.</div>
           <div class="ds-primary-ev-chips" id="poly-chips">
-            <span class="ds-primary-ev-chip strong">STOPP/START v3 criteria</span>
-            <span class="ds-primary-ev-chip strong">AGS Beers Criteria 2023</span>
-            <span class="ds-primary-ev-chip caution">Serotonin interaction — action required</span>
-            <span class="ds-primary-ev-chip caution">ACB ≥3 — cognitive risk</span>
+
           </div>
           <div class="ds-conf-strip">
             <div class="ds-conf-main">
-              <div class="ds-conf-pct" id="poly-conf-pct">91%</div>
+              <div class="ds-conf-pct" id="poly-conf-pct">—</div>
               <div class="ds-conf-detail">
-                <div class="ds-conf-label" id="poly-conf-label">High confidence</div>
-                <div class="ds-conf-desc" id="poly-conf-desc">Multiple STOPP criteria met · immediate deprescribing targets identified</div>
-                <div class="ds-conf-bar"><div class="ds-conf-bar-fill" id="poly-conf-bar" style="width:91%;"></div></div>
+                <div class="ds-conf-label" id="poly-conf-label">Awaiting assessment</div>
+                <div class="ds-conf-desc" id="poly-conf-desc">Enter medication count to begin</div>
+                <div class="ds-conf-bar"><div class="ds-conf-bar-fill" id="poly-conf-bar" style="width:0%;"></div></div>
               </div>
             </div>
           </div>
@@ -5495,7 +5484,7 @@
         <div class="mn-top">
           <div class="mn-stat-card">
             <div class="mn-stat-label">Deprescribing targets</div>
-            <div class="mn-stat-val mn-stat-val-lg" id="poly-mon-targets">5</div>
+            <div class="mn-stat-val mn-stat-val-lg" id="poly-mon-targets">—</div>
             <div class="mn-stat-sub">Identified for review or withdrawal</div>
           </div>
           <div class="mn-stat-card mn-stat-card-uncertain">
