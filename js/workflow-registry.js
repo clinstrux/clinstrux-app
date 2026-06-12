@@ -117,59 +117,118 @@ var WorkflowRegistry = (function() {
     },
 
     /* ══════════════════════════════════════════════════════════
-       ANTIBIOTIC STEWARDSHIP REVIEW
+       ANTIBIOTIC STEWARDSHIP REVIEW — UTI
     ══════════════════════════════════════════════════════════ */
     abx: {
       id:              'abx',
-      label:           'Antibiotic Stewardship Review',
+      label:           'Antibiotic Stewardship Review — UTI',
       category:        'Stewardship',
-      guidelineSource: 'NHS/BNF Antimicrobial Stewardship',
+      guidelineSource: 'NICE NG112 · NICE NG15 · UKHSA AMR guidance',
 
       pageId: 'abx-page',
 
       sections: [
-        { id: 'patient-inputs',  domId: 'abx-section-inputs',         label: 'Patient Inputs',  step: 1, required: true },
-        { id: 'clinical-status', domId: 'abx-section-assessment',     label: 'Clinical Status', step: 2, required: true },
-        { id: 'recommendation',  domId: 'abx-section-recommendation', label: 'Recommendation',  step: 3, required: true },
-        { id: 'monitoring',      domId: 'abx-section-monitoring',     label: 'Monitoring',      step: 4, required: true }
+        { id: 'patient-inputs',  domId: 'abx-section-inputs',         label: 'Patient Profile',    step: 1, required: true  },
+        { id: 'microbiology',    domId: 'abx-section-micro',          label: 'Microbiology',        step: 2, required: true  },
+        { id: 'assessment',      domId: 'abx-section-assessment',     label: 'Clinical Assessment', step: 3, required: true  },
+        { id: 'recommendation',  domId: 'abx-section-recommendation', label: 'Recommendation',      step: 4, required: true  },
+        { id: 'monitoring',      domId: 'abx-section-monitoring',     label: 'Monitoring',          step: 5, required: true  }
       ],
 
-      /* Factory default state — matches var ABX in abx.js exactly */
+      /* Factory default state — null schema per spec §12.
+         Engine blocked until all mandatory fields are non-null. */
       defaultState: {
-        wbc:         14.2,
-        crp:         88,
-        gfr:         52,
-        temp:        37.4,
-        improvement: 'improving',
-        culture:     'pending'
+        age:            null,
+        sex:            null,
+        weight:         null,
+        height:         null,
+        pregnant:       null,
+        catheter:       null,
+        immunocomp:     null,
+        structural:     null,
+        pen_allergy:    null,
+        site:           null,
+        egfr:           null,
+        alt:            null,
+        ast:            null,
+        crp:            null,
+        wbc:            null,
+        pct:            null,
+        culture:        null,
+        organism:       null,
+        esbl:           null,
+        susceptibility: null,
+        abx_day:        null,
+        iv_days:        null,
+        current_abx:    null,
+        prior_abx_90d:  null,
+        prior_resistant: null,
+        hospital_onset: null,
+        response:       null,
+        temp:           null,
+        news2:          null
       },
 
-      enterFn:  'enterAbxWorkflow',
-      navFn:    'abxShowSection',
-      engineFn: 'abxRunReasoningEngine',
-      initFn:   null,
-      stateVar: 'ABX',
+      enterFn:     'enterAbxWorkflow',
+      navFn:       'abxShowSection',
+      engineFn:    'abxRunReasoningEngine',
+      readinessFn: 'abxIsReady',
+      initFn:      null,
+      stateVar:    'ABX',
 
-      paramKeys: ['wbc', 'crp', 'gfr', 'temp', 'improvement', 'culture'],
+      paramKeys: [
+        'age', 'sex', 'weight', 'height', 'pregnant', 'catheter',
+        'immunocomp', 'structural', 'pen_allergy', 'site',
+        'egfr', 'alt', 'ast', 'crp', 'wbc', 'pct',
+        'culture', 'organism', 'esbl', 'susceptibility',
+        'abx_day', 'iv_days', 'current_abx',
+        'prior_abx_90d', 'prior_resistant', 'hospital_onset',
+        'response', 'temp', 'news2'
+      ],
 
       inputMap: {
-        wbc:         { domId: 'abx-rng-wbc',          type: 'range',  displayId: 'abx-rng-wbc-val',  parse: 'float'      },
-        crp:         { domId: 'abx-rng-crp',          type: 'range',  displayId: 'abx-rng-crp-val',  parse: 'float'      },
-        gfr:         { domId: 'abx-rng-gfr',          type: 'range',  displayId: 'abx-rng-gfr-val',  parse: 'float'      },
-        temp:        { domId: 'abx-rng-temp',         type: 'range',  displayId: 'abx-rng-temp-val', parse: 'float1dp'   },
-        improvement: { domId: 'abx-sel-improvement',  type: 'select' },
-        culture:     { domId: 'abx-sel-culture',      type: 'select' }
+        age:            { domId: 'abx-rng-age',            type: 'range',  displayId: 'abx-rng-age-val',            parse: 'int'    },
+        weight:         { domId: 'abx-rng-weight',         type: 'range',  displayId: 'abx-rng-weight-val',         parse: 'float'  },
+        height:         { domId: 'abx-rng-height',         type: 'range',  displayId: 'abx-rng-height-val',         parse: 'int'    },
+        egfr:           { domId: 'abx-rng-egfr',           type: 'range',  displayId: 'abx-rng-egfr-val',           parse: 'int'    },
+        alt:            { domId: 'abx-rng-alt',            type: 'range',  displayId: 'abx-rng-alt-val',            parse: 'int'    },
+        ast:            { domId: 'abx-rng-ast',            type: 'range',  displayId: 'abx-rng-ast-val',            parse: 'int'    },
+        abx_day:        { domId: 'abx-rng-abx-day',        type: 'range',  displayId: 'abx-rng-abx-day-val',        parse: 'int'    },
+        iv_days:        { domId: 'abx-rng-iv-days',        type: 'range',  displayId: 'abx-rng-iv-days-val',        parse: 'int'    },
+        crp:            { domId: 'abx-rng-crp',            type: 'range',  displayId: 'abx-rng-crp-val',            parse: 'int'    },
+        wbc:            { domId: 'abx-rng-wbc',            type: 'range',  displayId: 'abx-rng-wbc-val',            parse: 'float'  },
+        pct:            { domId: 'abx-rng-pct',            type: 'range',  displayId: 'abx-rng-pct-val',            parse: 'float'  },
+        temp:           { domId: 'abx-rng-temp',           type: 'range',  displayId: 'abx-rng-temp-val',           parse: 'float'  },
+        news2:          { domId: 'abx-rng-news2',          type: 'range',  displayId: 'abx-rng-news2-val',          parse: 'int'    },
+        sex:            { domId: 'abx-sel-sex',            type: 'select' },
+        pregnant:       { domId: 'abx-sel-pregnant',       type: 'select' },
+        catheter:       { domId: 'abx-sel-catheter',       type: 'select' },
+        immunocomp:     { domId: 'abx-sel-immunocomp',     type: 'select' },
+        structural:     { domId: 'abx-sel-structural',     type: 'select' },
+        pen_allergy:    { domId: 'abx-sel-pen-allergy',    type: 'select' },
+        site:           { domId: 'abx-sel-site',           type: 'select' },
+        current_abx:    { domId: 'abx-sel-current-abx',   type: 'select' },
+        culture:        { domId: 'abx-sel-culture',        type: 'select' },
+        organism:       { domId: 'abx-sel-organism',       type: 'select' },
+        esbl:           { domId: 'abx-sel-esbl',           type: 'select' },
+        susceptibility: { domId: 'abx-sel-susceptibility', type: 'select' },
+        prior_abx_90d:  { domId: 'abx-sel-prior-abx-90d', type: 'select' },
+        prior_resistant:{ domId: 'abx-sel-prior-resistant',type: 'select' },
+        hospital_onset: { domId: 'abx-sel-hospital-onset', type: 'select' },
+        response:       { domId: 'abx-sel-response',       type: 'select' }
       },
 
       outputMap: {
-        impression_lines:      { domId: 'abx-ci-paragraphs',       method: 'innerText'   },
-        impression_conclusion: { domId: 'abx-ci-conclusion-text',  method: 'textContent' },
-        rec_action:            { domId: 'abx-rec-action',          method: 'innerText'   },
-        rec_state:             { domId: 'abx-rec-state',           method: 'textContent' },
-        rec_rationale:         { domId: 'abx-rec-rationale',       method: 'textContent' },
-        rec_confidence:        { domId: 'abx-conf-pct',            method: 'textContent' },
-        monitoring_renal:      { domId: 'abx-rd-piptz',            method: 'textContent' },
-        monitoring_renal_note: { domId: 'abx-rd-piptz-note',       method: 'textContent' }
+        impression_lines:      { domId: 'abx-ci-paragraphs',            method: 'innerText'   },
+        impression_conclusion: { domId: 'abx-ci-conclusion-text',       method: 'textContent' },
+        status_overall:        { domId: 'abx-overall-text',             method: 'textContent' },
+        rec_action:            { domId: 'abx-rec-action',               method: 'innerHTML'   },
+        rec_state:             { domId: 'abx-rec-state',                method: 'textContent' },
+        rec_rationale:         { domId: 'abx-rec-rationale',            method: 'textContent' },
+        rec_confidence:        { domId: 'abx-conf-pct',                 method: 'textContent' },
+        rec_conf_label:        { domId: 'abx-conf-label',               method: 'textContent' },
+        monitoring_renal:      { domId: 'abx-rd-piptz',                 method: 'textContent' },
+        monitoring_renal_note: { domId: 'abx-rd-piptz-note',            method: 'textContent' }
       }
     },
 
