@@ -67,10 +67,14 @@ var CaseShell = (function () {
       liveState[keys[i]] = savedState[keys[i]];
     }
     console.info('[CaseShell] State restored for ' + entry.stateVar);
-    if (entry.engineFn && typeof window[entry.engineFn] === 'function') {
+    var _ready = true;
+    if (entry.readinessFn && typeof window[entry.readinessFn] === 'function') {
+      _ready = window[entry.readinessFn]();
+    }
+    if (_ready && entry.engineFn && typeof window[entry.engineFn] === 'function') {
       window[entry.engineFn]();
     }
-    if (entry.initFn && typeof window[entry.initFn] === 'function') {
+    if (_ready && entry.initFn && typeof window[entry.initFn] === 'function') {
       window[entry.initFn]();
     }
   }

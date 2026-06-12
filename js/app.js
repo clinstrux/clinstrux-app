@@ -50,9 +50,6 @@ document.addEventListener('DOMContentLoaded', function() {
   /* ── 3. ABX pre-warm ────────────────────────────────────── */
   abxRunReasoningEngine();
 
-  /* ── 4. Poly pre-warm ───────────────────────────────────── */
-  polyRunReasoningEngine();
-
   /* ── 5. Initialise router with all platform routes ──────── */
   Router.init([
     { path: '/dashboard',      view: DashboardView   },

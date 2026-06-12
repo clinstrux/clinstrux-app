@@ -191,21 +191,22 @@ var WorkflowRegistry = (function() {
         { id: 'monitoring',        domId: 'poly-section-monitoring',     label: 'Monitoring',      step: 4, required: true }
       ],
 
-      /* Factory default state — matches var POLY in poly.js exactly */
+      /* Factory default state — null schema: engine blocked until meds is set */
       defaultState: {
-        meds:         11,
-        highrisk:     3,
-        interactions: 4,
-        duplicate:    'yes',
-        ach:          5,
-        falls:        'high'
+        meds:         null,
+        highrisk:     null,
+        interactions: null,
+        duplicate:    null,
+        ach:          null,
+        falls:        null
       },
 
-      enterFn:  'enterPolyWorkflow',
-      navFn:    'polyShowSection',
-      engineFn: 'polyRunReasoningEngine',
-      initFn:   null,
-      stateVar: 'POLY',
+      enterFn:      'enterPolyWorkflow',
+      navFn:        'polyShowSection',
+      engineFn:     'polyRunReasoningEngine',
+      readinessFn:  'polyIsReady',
+      initFn:       null,
+      stateVar:     'POLY',
 
       paramKeys: ['meds', 'highrisk', 'interactions', 'duplicate', 'ach', 'falls'],
 

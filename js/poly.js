@@ -9,12 +9,12 @@
 ════════════════════════════════════════════════════════════ */
 
 var POLY = {
-  meds:         11,
-  highrisk:     3,
-  interactions: 4,
-  duplicate:    'yes',
-  ach:          5,
-  falls:        'high'
+  meds:         null,
+  highrisk:     null,
+  interactions: null,
+  duplicate:    null,
+  ach:          null,
+  falls:        null
 };
 
 var _polyActivePopover = null;
@@ -46,7 +46,7 @@ function polyOpenPopover(key, e) {
   if (syncMap[key] === 'rng') {
     var r = document.getElementById('poly-rng-' + key);
     var v = document.getElementById('poly-rng-' + key + '-val');
-    if (r) { r.value = POLY[key]; if (v) v.textContent = POLY[key]; }
+    if (r && POLY[key] !== null) { r.value = POLY[key]; if (v) v.textContent = POLY[key]; }
   }
   if (key === 'duplicate') { var s = document.getElementById('poly-sel-duplicate'); if (s) s.value = POLY.duplicate; }
   if (key === 'falls')     { var s = document.getElementById('poly-sel-falls');     if (s) s.value = POLY.falls; }
@@ -95,7 +95,12 @@ function polyHighRisk()       { return POLY.highrisk >= 3; }
    POLY — REASONING ENGINE
 ════════════════════════════════════════════════════════════ */
 
+function polyIsReady() {
+  return POLY.meds !== null;
+}
+
 function polyRunReasoningEngine() {
+  if (POLY.meds === null) { return; }
   polyUpdateParamCards();
   polyUpdateClinicalStatusSummary();
   polyUpdateClinicalImpression();
@@ -120,11 +125,11 @@ function polyUpdateParamCards() {
   var intSig = POLY.interactions >= 4 ? '2 clinically significant' : POLY.interactions >= 2 ? '1 clinically significant' : 'No significant interactions';
   var intCls = POLY.interactions >= 4 ? 'abx-val-red' : POLY.interactions >= 2 ? 'abx-val-amber' : 'abx-val-green';
   setVal('poly-val-interactions', POLY.interactions); setVal('poly-status-interactions', intSig); setCls('poly-val-interactions', intCls);
-  setVal('poly-val-duplicate', POLY_DUPLICATE_LABELS[POLY.duplicate]); setVal('poly-status-duplicate', POLY_DUPLICATE_SUBS[POLY.duplicate]); setCls('poly-val-duplicate', POLY_DUPLICATE_CLS[POLY.duplicate]);
+  setVal('poly-val-duplicate', POLY.duplicate !== null ? (POLY_DUPLICATE_LABELS[POLY.duplicate] || '') : ''); setVal('poly-status-duplicate', POLY.duplicate !== null ? (POLY_DUPLICATE_SUBS[POLY.duplicate] || '') : ''); setCls('poly-val-duplicate', POLY.duplicate !== null ? (POLY_DUPLICATE_CLS[POLY.duplicate] || '') : '');
   var achKey = POLY.ach >= 6 ? 'very_high' : POLY.ach >= 3 ? 'high' : POLY.ach >= 1 ? 'mild' : 'minimal';
   var achCls = POLY.ach >= 6 ? 'abx-val-red' : POLY.ach >= 3 ? 'abx-val-amber' : '';
   setVal('poly-val-ach', POLY.ach); setVal('poly-status-ach', POLY_ACH_LABELS[achKey]); setCls('poly-val-ach', achCls);
-  setVal('poly-val-falls', POLY_FALLS_DISPLAY[POLY.falls] || 'High'); setVal('poly-status-falls', POLY_FALLS_LABELS[POLY.falls] || ''); setCls('poly-val-falls', POLY_FALLS_CLS[POLY.falls] || 'abx-val-red');
+  setVal('poly-val-falls', POLY.falls !== null ? (POLY_FALLS_DISPLAY[POLY.falls] || '') : ''); setVal('poly-status-falls', POLY.falls !== null ? (POLY_FALLS_LABELS[POLY.falls] || '') : ''); setCls('poly-val-falls', POLY.falls !== null ? (POLY_FALLS_CLS[POLY.falls] || '') : '');
 }
 
 /* ── 2. Clinical Status Summary ──────────────────────────────────────────── */
@@ -141,7 +146,7 @@ function polyUpdateClinicalStatusSummary() {
   var achKey = polyVeryHighAch() ? 'very_high' : polyHighAch() ? 'high' : 'low';
   var a = POLY_CSS_ACH[achKey];
   setVal('poly-m-ach', a.val_prefix + POLY.ach + ')'); setVal('poly-m-ach-sub', a.sub); setCls('poly-m-ach', a.cls);
-  var fallsData = POLY_CSS_FALLS[POLY.falls] || POLY_CSS_FALLS.high;
+  var fallsData = POLY.falls !== null ? (POLY_CSS_FALLS[POLY.falls] || POLY_CSS_FALLS.low) : POLY_CSS_FALLS.low;
   setVal('poly-m-falls', fallsData.val); setVal('poly-m-falls-sub', fallsData.sub); setCls('poly-m-falls', fallsData.cls);
   var intKey = POLY.interactions >= 4 ? 'high' : POLY.interactions >= 2 ? 'moderate' : 'low';
   var inter = POLY_CSS_INTERACTIONS[intKey];
