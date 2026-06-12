@@ -5244,77 +5244,9 @@
           <div class="poly-med-head">
             <div>Medication</div><div>Indication</div><div>Risk flag</div><div>Review priority</div>
           </div>
-          <div class="poly-med-row">
-            <div class="poly-med-name">Warfarin 3 mg daily</div>
-            <div class="poly-med-ind">AF — stroke prevention</div>
-            <div class="poly-med-flag poly-flag-red">High-risk · INR monitoring</div>
-            <div class="poly-med-pri poly-pri-amber">Routine INR review</div>
+          <div class="poly-med-row poly-med-row-empty">
+            <div class="poly-med-waiting">No medications entered. Enter the total medication count in Step 1 to begin the assessment.</div>
           </div>
-          <div class="poly-med-row">
-            <div class="poly-med-name">Oxybutynin 5 mg BD</div>
-            <div class="poly-med-ind">Overactive bladder</div>
-            <div class="poly-med-flag poly-flag-red">ACB +3 · Falls · Cognitive risk</div>
-            <div class="poly-med-pri poly-pri-red">Deprescribing candidate</div>
-          </div>
-          <div class="poly-med-row">
-            <div class="poly-med-name">Amitriptyline 25 mg nocte</div>
-            <div class="poly-med-ind">Neuropathic pain / sleep</div>
-            <div class="poly-med-flag poly-flag-red">ACB +2 · Falls · Sedation</div>
-            <div class="poly-med-pri poly-pri-red">Deprescribing candidate</div>
-          </div>
-          <div class="poly-med-row">
-            <div class="poly-med-name">Zopiclone 7.5 mg nocte</div>
-            <div class="poly-med-ind">Insomnia</div>
-            <div class="poly-med-flag poly-flag-red">Falls · Dependence risk</div>
-            <div class="poly-med-pri poly-pri-red">Taper and withdraw</div>
-          </div>
-          <div class="poly-med-row">
-            <div class="poly-med-name">Tramadol 50 mg QDS</div>
-            <div class="poly-med-ind">Chronic pain</div>
-            <div class="poly-med-flag poly-flag-red">Falls · Serotonin risk (+ SSRI)</div>
-            <div class="poly-med-pri poly-pri-red">Review indication urgently</div>
-          </div>
-          <div class="poly-med-row">
-            <div class="poly-med-name">Sertraline 100 mg daily</div>
-            <div class="poly-med-ind">Depression</div>
-            <div class="poly-med-flag poly-flag-amber">Serotonin risk (+ tramadol)</div>
-            <div class="poly-med-pri poly-pri-amber">Interaction review</div>
-          </div>
-          <div class="poly-med-row">
-            <div class="poly-med-name">Amlodipine 10 mg daily</div>
-            <div class="poly-med-ind">Hypertension</div>
-            <div class="poly-med-flag poly-flag-amber">Duplicate class (+ ramipril)</div>
-            <div class="poly-med-pri poly-pri-amber">Confirm dual indication</div>
-          </div>
-          <div class="poly-med-row">
-            <div class="poly-med-name">Ramipril 10 mg daily</div>
-            <div class="poly-med-ind">Hypertension / renal protection</div>
-            <div class="poly-med-flag poly-flag-muted">Standard monitoring</div>
-            <div class="poly-med-pri poly-pri-muted">Continue — review K⁺</div>
-          </div>
-          <div class="poly-med-row">
-            <div class="poly-med-name">Metformin 1 g BD</div>
-            <div class="poly-med-ind">Type 2 diabetes</div>
-            <div class="poly-med-flag poly-flag-muted">eGFR monitoring required</div>
-            <div class="poly-med-pri poly-pri-muted">Continue — check renal function</div>
-          </div>
-          <div class="poly-med-row">
-            <div class="poly-med-name">Alendronic acid 70 mg weekly</div>
-            <div class="poly-med-ind">Osteoporosis</div>
-            <div class="poly-med-flag poly-flag-muted">Administration technique review</div>
-            <div class="poly-med-pri poly-pri-muted">Confirm adherence</div>
-          </div>
-          <div class="poly-med-row poly-med-row-last">
-            <div class="poly-med-name">Omeprazole 20 mg daily</div>
-            <div class="poly-med-ind">GI protection</div>
-            <div class="poly-med-flag poly-flag-muted">Indication review (long-term)</div>
-            <div class="poly-med-pri poly-pri-muted">Review ongoing need</div>
-          </div>
-        </div>
-
-        <div class="dp-disclaimer">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-shrink-0"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-          Medication list is pre-populated for demonstration. Adjust burden indicators above to update the assessment in real time.
         </div>
       </div>
 
@@ -5433,36 +5365,7 @@
         <!-- Deprescribing targets -->
         <div class="dp-subsection-label">Prioritised deprescribing targets</div>
         <div class="poly-depresc-grid" id="poly-depresc-grid">
-          <div class="poly-depresc-card poly-depresc-urgent">
-            <div class="poly-depresc-priority">Priority 1 — Urgent</div>
-            <div class="poly-depresc-drug">Tramadol + Sertraline</div>
-            <div class="poly-depresc-reason">Clinically significant serotonin syndrome risk. Concurrent use warrants urgent review — consider switching tramadol to an alternative analgesic class with lower serotonergic potential.</div>
-            <div class="poly-depresc-action">Review analgesic — switch away from tramadol</div>
-          </div>
-          <div class="poly-depresc-card poly-depresc-high">
-            <div class="poly-depresc-priority">Priority 2 — High</div>
-            <div class="poly-depresc-drug">Oxybutynin 5 mg BD</div>
-            <div class="poly-depresc-reason">ACB score +3. Contributes substantially to anticholinergic burden. Associated with cognitive impairment, falls, urinary retention, and constipation in frail older adults. Consider mirabegron as a lower-burden alternative or non-pharmacological bladder training.</div>
-            <div class="poly-depresc-action">Switch to mirabegron or initiate bladder training</div>
-          </div>
-          <div class="poly-depresc-card poly-depresc-high">
-            <div class="poly-depresc-priority">Priority 3 — High</div>
-            <div class="poly-depresc-drug">Zopiclone 7.5 mg nocte</div>
-            <div class="poly-depresc-reason">Z-drug hypnotics are a recognised FRID and Beers/STOPP criterion in older adults. Risk of falls, cognitive impairment, and physical dependence. Initiate gradual taper over 4–6 weeks with sleep hygiene support.</div>
-            <div class="poly-depresc-action">Structured taper — 25% dose reduction every 2 weeks</div>
-          </div>
-          <div class="poly-depresc-card poly-depresc-moderate">
-            <div class="poly-depresc-priority">Priority 4 — Review</div>
-            <div class="poly-depresc-drug">Amitriptyline 25 mg nocte</div>
-            <div class="poly-depresc-reason">ACB score +2. Tricyclic antidepressants are a STOPP criterion in older adults. If prescribed for neuropathic pain, consider switching to gabapentin or duloxetine. If for sleep, address as part of zopiclone withdrawal plan.</div>
-            <div class="poly-depresc-action">Review indication — consider gabapentin or duloxetine switch</div>
-          </div>
-          <div class="poly-depresc-card poly-depresc-moderate">
-            <div class="poly-depresc-priority">Priority 5 — Confirm</div>
-            <div class="poly-depresc-drug">Dual antihypertensive (amlodipine + ramipril)</div>
-            <div class="poly-depresc-reason">Dual antihypertensive therapy may be intentional (BP target not met on monotherapy) or represent duplicate prescribing. Confirm current BP readings and target. If BP is at goal, consider stepping down to monotherapy.</div>
-            <div class="poly-depresc-action">Check recent BP readings — confirm dual therapy indication</div>
-          </div>
+          <div class="poly-depresc-waiting">Complete the burden assessment to identify deprescribing candidates.</div>
         </div>
 
         <div class="dp-disclaimer">
