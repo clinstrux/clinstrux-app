@@ -4471,10 +4471,10 @@
         All Workflows
       </a>
       <div class="dp-scenario-label">Current Workflow</div>
-      <div class="dp-scenario-title">Antibiotic Stewardship Review</div>
+      <div class="dp-scenario-title">Antibiotic Stewardship Review — UTI</div>
       <div class="dp-scenario-meta">
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span id="dyn-abx-patient-meta">72 y/o · Male · May 2026</span>
+        <span id="dyn-abx-patient-meta">— · May 2026</span>
       </div>
       <div class="dp-scenario-status">Active session</div>
     </div>
@@ -4482,43 +4482,46 @@
     <div class="dp-risk-strip" id="abx-risk-strip">
       <div class="dp-risk-strip-row">
         <span class="dp-risk-dot dp-risk-dot-amber"></span>
-        <span class="dp-risk-text">Day 3 of IV piperacillin-tazobactam</span>
+        <span class="dp-risk-text" id="abx-risk-text-1">Complete mandatory fields to begin</span>
       </div>
       <div class="dp-risk-strip-row">
-        <span class="dp-risk-dot dp-risk-dot-amber"></span>
-        <span class="dp-risk-text">Renal dose adjustment active</span>
+        <span class="dp-risk-dot" id="abx-risk-dot-2" style="background:var(--border);width:6px;height:6px;border-radius:50%;"></span>
+        <span class="dp-risk-text" id="abx-risk-text-2">Culture result pending</span>
       </div>
       <div class="dp-risk-strip-row">
-        <span class="dp-risk-dot" id="abx-risk-dot-3" style="background:var(--amber);width:6px;height:6px;border-radius:50%;"></span>
-        <span class="dp-risk-text" id="abx-risk-text-3">Culture data pending</span>
+        <span class="dp-risk-dot" id="abx-risk-dot-3" style="background:var(--border);width:6px;height:6px;border-radius:50%;"></span>
+        <span class="dp-risk-text" id="abx-risk-text-3">Renal status not assessed</span>
       </div>
     </div>
 
     <div class="dp-nav">
       <div class="dp-nav-phase"><div class="dp-nav-phase-label">I — Patient Context</div></div>
-      <button class="dp-nav-item done" onclick="abxShowSection('abx-section-inputs', this)">
+      <button class="dp-nav-item active" onclick="abxShowSection('abx-section-inputs', this)">
         <span class="dp-nav-num">1</span>
-        <span class="dp-nav-item-inner"><span class="dp-nav-item-title">Patient &amp; Lab Parameters</span></span>
-        <svg class="dp-nav-check" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        <span class="dp-nav-item-inner"><span class="dp-nav-item-title">Patient Profile</span></span>
+      </button>
+      <button class="dp-nav-item" onclick="abxShowSection('abx-section-micro', this)">
+        <span class="dp-nav-num">2</span>
+        <span class="dp-nav-item-inner"><span class="dp-nav-item-title">Microbiology</span></span>
       </button>
       <div class="dp-nav-phase"><div class="dp-nav-phase-label">II — Clinical Assessment</div></div>
-      <button class="dp-nav-item active" onclick="abxShowSection('abx-section-assessment', this)">
-        <span class="dp-nav-num">2</span>
+      <button class="dp-nav-item" onclick="abxShowSection('abx-section-assessment', this)">
+        <span class="dp-nav-num">3</span>
         <span class="dp-nav-item-inner">
-          <span class="dp-nav-item-title">Stewardship Assessment</span>
+          <span class="dp-nav-item-title">Clinical Assessment</span>
           <span class="dp-nav-item-tag tag-green" id="abx-nav-rec-tag">Review ready</span>
         </span>
       </button>
       <div class="dp-nav-phase"><div class="dp-nav-phase-label">III — Decision &amp; Monitoring</div></div>
       <button class="dp-nav-item" onclick="abxShowSection('abx-section-recommendation', this)">
-        <span class="dp-nav-num">3</span>
+        <span class="dp-nav-num">4</span>
         <span class="dp-nav-item-inner"><span class="dp-nav-item-title">Recommendation &amp; Rationale</span></span>
       </button>
       <button class="dp-nav-item" onclick="abxShowSection('abx-section-monitoring', this)">
-        <span class="dp-nav-num">4</span>
+        <span class="dp-nav-num">5</span>
         <span class="dp-nav-item-inner">
           <span class="dp-nav-item-title">Monitoring Parameters</span>
-          <span class="dp-nav-item-tag tag-amber">Renal flag</span>
+          <span class="dp-nav-item-tag tag-amber" id="abx-nav-mon-tag">Renal flag</span>
         </span>
       </button>
     </div>
@@ -4548,7 +4551,7 @@
         </div>
       </div>
       <div class="dp-topbar-right">
-        <div class="dp-topbar-timestamp">Reviewed: May 17, 2026 · 11:30</div>
+        <div class="dp-topbar-timestamp">NICE NG112 · NICE NG15 · UKHSA AMR</div>
         <div class="dp-evidence-badge">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           Stewardship
@@ -4558,77 +4561,491 @@
 
     <div class="dp-content">
 
-      <!-- ── SECTION 1: PATIENT & LAB INPUTS ─────────────────────────── -->
+      <!-- ══════════════════════════════════════════════════════════════
+           SECTION 1: PATIENT PROFILE
+      ══════════════════════════════════════════════════════════════ -->
       <div id="abx-section-inputs" class="dp-section active">
         <div class="dp-section-header">
           <div class="dp-section-title-wrap">
             <div class="dp-section-label">Step 1</div>
-            <div class="dp-section-title">Patient &amp; Lab Parameters</div>
-            <div class="dp-section-subtitle">Current antimicrobial regimen, inflammatory markers, and clinical status. Adjust any value to update the stewardship assessment.</div>
+            <div class="dp-section-title">Patient Profile</div>
+            <div class="dp-section-subtitle">Demographics, host risk factors, renal and hepatic function. Complete all mandatory fields to activate the reasoning engine.</div>
           </div>
         </div>
 
         <!-- Patient banner -->
         <div class="abx-patient-banner">
           <div class="abx-patient-left">
-            <div class="abx-patient-name" id="dyn-abx-patient-name">72-year-old male · Community-acquired pneumonia</div>
-            <div class="abx-patient-sub" id="dyn-abx-patient-sub">Day 3 inpatient · IV piperacillin-tazobactam 4.5 g TDS · eGFR-adjusted dosing active</div>
+            <div class="abx-patient-name" id="dyn-abx-patient-name">UTI — Antibiotic Stewardship Review</div>
+            <div class="abx-patient-sub" id="dyn-abx-patient-sub">Enter patient profile to begin assessment</div>
           </div>
           <div class="abx-patient-tags">
-            <span class="abx-tag abx-tag-amber">High-risk host</span>
-            <span class="abx-tag abx-tag-blue">Day 3 review</span>
+            <span class="abx-tag abx-tag-amber">Mandatory fields required</span>
+            <span class="abx-tag abx-tag-blue">NICE NG112</span>
           </div>
         </div>
 
-        <!-- Parameter grid -->
+        <!-- ── Demographics group ──────────────────────────────────── -->
+        <div class="dp-subsection-label">Demographics &amp; Host Factors</div>
         <div class="abx-param-grid">
+
+          <!-- Age -->
+          <div class="abx-param-card" id="abx-p-age" onclick="abxOpenPopover('age', event)">
+            <div class="abx-param-label">Age (years) <span style="color:var(--red);font-size:9px;">★</span></div>
+            <div class="abx-param-value" id="abx-val-age">—</div>
+            <div class="abx-param-status" id="abx-status-age">Not entered</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- Sex -->
+          <div class="abx-param-card" id="abx-p-sex" onclick="abxOpenPopover('sex', event)">
+            <div class="abx-param-label">Sex <span style="color:var(--red);font-size:9px;">★</span></div>
+            <div class="abx-param-value" id="abx-val-sex">—</div>
+            <div class="abx-param-status" id="abx-status-sex">Not entered</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- Weight -->
+          <div class="abx-param-card" id="abx-p-weight" onclick="abxOpenPopover('weight', event)">
+            <div class="abx-param-label">Weight (kg)</div>
+            <div class="abx-param-value" id="abx-val-weight">—</div>
+            <div class="abx-param-status" id="abx-status-weight">Optional — used for gentamicin dosing</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- Height -->
+          <div class="abx-param-card" id="abx-p-height" onclick="abxOpenPopover('height', event)">
+            <div class="abx-param-label">Height (cm)</div>
+            <div class="abx-param-value" id="abx-val-height">—</div>
+            <div class="abx-param-status" id="abx-status-height">Optional — used for IBW calculation</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- Pregnant -->
+          <div class="abx-param-card" id="abx-p-pregnant" onclick="abxOpenPopover('pregnant', event)">
+            <div class="abx-param-label">Pregnancy <span style="color:var(--red);font-size:9px;">★</span></div>
+            <div class="abx-param-value" id="abx-val-pregnant">—</div>
+            <div class="abx-param-status" id="abx-status-pregnant">Affects agent selection</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- Catheter -->
+          <div class="abx-param-card" id="abx-p-catheter" onclick="abxOpenPopover('catheter', event)">
+            <div class="abx-param-label">Urinary catheter <span style="color:var(--red);font-size:9px;">★</span></div>
+            <div class="abx-param-value" id="abx-val-catheter">—</div>
+            <div class="abx-param-status" id="abx-status-catheter">Complicating factor if present</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- Immunocompromised -->
+          <div class="abx-param-card" id="abx-p-immunocomp" onclick="abxOpenPopover('immunocomp', event)">
+            <div class="abx-param-label">Immunocompromised</div>
+            <div class="abx-param-value" id="abx-val-immunocomp">—</div>
+            <div class="abx-param-status" id="abx-status-immunocomp">Affects pathway</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- Structural abnormality -->
+          <div class="abx-param-card" id="abx-p-structural" onclick="abxOpenPopover('structural', event)">
+            <div class="abx-param-label">Structural urinary abnormality</div>
+            <div class="abx-param-value" id="abx-val-structural">—</div>
+            <div class="abx-param-status" id="abx-status-structural">Complicating factor if present</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- Pen allergy -->
+          <div class="abx-param-card" id="abx-p-pen_allergy" onclick="abxOpenPopover('pen_allergy', event)">
+            <div class="abx-param-label">Penicillin allergy <span style="color:var(--red);font-size:9px;">★</span></div>
+            <div class="abx-param-value" id="abx-val-pen_allergy">—</div>
+            <div class="abx-param-status" id="abx-status-pen_allergy">Risk-stratified — affects agent selection</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- Site -->
+          <div class="abx-param-card" id="abx-p-site" onclick="abxOpenPopover('site', event)">
+            <div class="abx-param-label">UTI site / classification <span style="color:var(--red);font-size:9px;">★</span></div>
+            <div class="abx-param-value" id="abx-val-site">—</div>
+            <div class="abx-param-status" id="abx-status-site">Drives primary pathway</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+        </div>
+
+        <!-- ── Lab values group ───────────────────────────────────── -->
+        <div class="dp-subsection-label">Laboratory Values</div>
+        <div class="abx-param-grid">
+
+          <!-- eGFR -->
+          <div class="abx-param-card" id="abx-p-egfr" onclick="abxOpenPopover('egfr', event)">
+            <div class="abx-param-label">eGFR (mL/min/1.73m²) <span style="color:var(--red);font-size:9px;">★</span></div>
+            <div class="abx-param-value" id="abx-val-egfr">—</div>
+            <div class="abx-param-status" id="abx-status-egfr">Required for dose adjustment</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- ALT -->
+          <div class="abx-param-card" id="abx-p-alt" onclick="abxOpenPopover('alt', event)">
+            <div class="abx-param-label">ALT (U/L)</div>
+            <div class="abx-param-value" id="abx-val-alt">—</div>
+            <div class="abx-param-status" id="abx-status-alt">Optional — hepatotoxicity screening</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- AST -->
+          <div class="abx-param-card" id="abx-p-ast" onclick="abxOpenPopover('ast', event)">
+            <div class="abx-param-label">AST (U/L)</div>
+            <div class="abx-param-value" id="abx-val-ast">—</div>
+            <div class="abx-param-status" id="abx-status-ast">Optional — hepatotoxicity screening</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- WBC -->
           <div class="abx-param-card" id="abx-p-wbc" onclick="abxOpenPopover('wbc', event)">
             <div class="abx-param-label">WBC (×10⁹/L)</div>
-            <div class="abx-param-value" id="abx-val-wbc">14.2</div>
-            <div class="abx-param-status" id="abx-status-wbc">Elevated</div>
+            <div class="abx-param-value" id="abx-val-wbc">—</div>
+            <div class="abx-param-status" id="abx-status-wbc">Inflammatory marker</div>
             <button class="ip-edit-btn">Edit ↗</button>
           </div>
+
+          <!-- CRP -->
           <div class="abx-param-card" id="abx-p-crp" onclick="abxOpenPopover('crp', event)">
             <div class="abx-param-label">CRP (mg/L)</div>
-            <div class="abx-param-value" id="abx-val-crp">88</div>
-            <div class="abx-param-status" id="abx-status-crp">Elevated · trending down</div>
+            <div class="abx-param-value" id="abx-val-crp">—</div>
+            <div class="abx-param-status" id="abx-status-crp">Inflammatory marker</div>
             <button class="ip-edit-btn">Edit ↗</button>
           </div>
-          <div class="abx-param-card" id="abx-p-gfr" onclick="abxOpenPopover('gfr', event)">
-            <div class="abx-param-label">eGFR (mL/min)</div>
-            <div class="abx-param-value" id="abx-val-gfr">52</div>
-            <div class="abx-param-status" id="abx-status-gfr">Mild impairment</div>
+
+          <!-- PCT -->
+          <div class="abx-param-card" id="abx-p-pct" onclick="abxOpenPopover('pct', event)">
+            <div class="abx-param-label">Procalcitonin (µg/L)</div>
+            <div class="abx-param-value" id="abx-val-pct">—</div>
+            <div class="abx-param-status" id="abx-status-pct">Optional — guides de-escalation</div>
             <button class="ip-edit-btn">Edit ↗</button>
           </div>
+
+          <!-- Temp -->
           <div class="abx-param-card" id="abx-p-temp" onclick="abxOpenPopover('temp', event)">
             <div class="abx-param-label">Temperature (°C)</div>
-            <div class="abx-param-value" id="abx-val-temp">37.4</div>
-            <div class="abx-param-status" id="abx-status-temp">Afebrile</div>
+            <div class="abx-param-value" id="abx-val-temp">—</div>
+            <div class="abx-param-status" id="abx-status-temp">Fever signal</div>
             <button class="ip-edit-btn">Edit ↗</button>
           </div>
-          <div class="abx-param-card abx-param-wide" id="abx-p-improvement" onclick="abxOpenPopover('improvement', event)">
-            <div class="abx-param-label">Clinical Improvement</div>
-            <div class="abx-param-value" id="abx-val-improvement">Improving</div>
-            <div class="abx-param-status" id="abx-status-improvement">Tolerating oral intake · mobilising</div>
+
+          <!-- NEWS2 -->
+          <div class="abx-param-card" id="abx-p-news2" onclick="abxOpenPopover('news2', event)">
+            <div class="abx-param-label">NEWS2 score</div>
+            <div class="abx-param-value" id="abx-val-news2">—</div>
+            <div class="abx-param-status" id="abx-status-news2">≥5 triggers urosepsis upgrade</div>
             <button class="ip-edit-btn">Edit ↗</button>
           </div>
-          <div class="abx-param-card abx-param-wide" id="abx-p-culture" onclick="abxOpenPopover('culture', event)">
-            <div class="abx-param-label">Culture / Sensitivity Data</div>
-            <div class="abx-param-value" id="abx-val-culture">Pending</div>
-            <div class="abx-param-status" id="abx-status-culture">Blood cultures day 1 — no growth to date</div>
+
+        </div>
+
+        <!-- ── Treatment context group ────────────────────────────── -->
+        <div class="dp-subsection-label">Treatment Context &amp; History</div>
+        <div class="abx-param-grid">
+
+          <!-- ABX day -->
+          <div class="abx-param-card" id="abx-p-abx_day" onclick="abxOpenPopover('abx_day', event)">
+            <div class="abx-param-label">Antibiotic course day <span style="color:var(--red);font-size:9px;">★</span></div>
+            <div class="abx-param-value" id="abx-val-abx_day">—</div>
+            <div class="abx-param-status" id="abx-status-abx_day">Day of current course (1-based)</div>
             <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- IV days -->
+          <div class="abx-param-card" id="abx-p-iv_days" onclick="abxOpenPopover('iv_days', event)">
+            <div class="abx-param-label">IV days completed</div>
+            <div class="abx-param-value" id="abx-val-iv_days">—</div>
+            <div class="abx-param-status" id="abx-status-iv_days">0 if oral only</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- Current ABX -->
+          <div class="abx-param-card" id="abx-p-current_abx" onclick="abxOpenPopover('current_abx', event)">
+            <div class="abx-param-label">Current antibiotic <span style="color:var(--red);font-size:9px;">★</span></div>
+            <div class="abx-param-value" id="abx-val-current_abx">—</div>
+            <div class="abx-param-status" id="abx-status-current_abx">Active regimen</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- Prior ABX 90d -->
+          <div class="abx-param-card" id="abx-p-prior_abx_90d" onclick="abxOpenPopover('prior_abx_90d', event)">
+            <div class="abx-param-label">Prior antibiotics (90 days)</div>
+            <div class="abx-param-value" id="abx-val-prior_abx_90d">—</div>
+            <div class="abx-param-status" id="abx-status-prior_abx_90d">Resistance risk factor</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- Prior resistant -->
+          <div class="abx-param-card" id="abx-p-prior_resistant" onclick="abxOpenPopover('prior_resistant', event)">
+            <div class="abx-param-label">Prior resistant organism</div>
+            <div class="abx-param-value" id="abx-val-prior_resistant">—</div>
+            <div class="abx-param-status" id="abx-status-prior_resistant">Resistance risk factor</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- Hospital onset -->
+          <div class="abx-param-card" id="abx-p-hospital_onset" onclick="abxOpenPopover('hospital_onset', event)">
+            <div class="abx-param-label">Hospital-onset infection</div>
+            <div class="abx-param-value" id="abx-val-hospital_onset">—</div>
+            <div class="abx-param-status" id="abx-status-hospital_onset">Affects empirical spectrum</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- Response -->
+          <div class="abx-param-card abx-param-wide" id="abx-p-response" onclick="abxOpenPopover('response', event)">
+            <div class="abx-param-label">Clinical response <span style="color:var(--red);font-size:9px;">★</span></div>
+            <div class="abx-param-value" id="abx-val-response">—</div>
+            <div class="abx-param-status" id="abx-status-response">Primary stewardship signal</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+        </div>
+
+        <!-- ── POPOVERS — Section 1 ────────────────────────────────── -->
+
+        <!-- Age -->
+        <div id="abx-pop-age" class="ip-popover">
+          <div class="ip-pop-title">Age</div>
+          <div class="ip-pop-desc">Patient age in years. Influences guideline thresholds and agent selection (e.g. nitrofurantoin in elderly).</div>
+          <div class="ip-pop-field">
+            <label>Age (years)</label>
+            <div class="ip-range-row">
+              <input type="range" class="ip-pop-range" id="abx-rng-age" min="16" max="100" step="1" value="50" oninput="document.getElementById('abx-rng-age-val').textContent=this.value">
+              <span class="ip-range-val" id="abx-rng-age-val">50</span>
+            </div>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('age')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('age')">Apply &amp; Update</button>
           </div>
         </div>
 
-        <!-- Popovers -->
+        <!-- Sex -->
+        <div id="abx-pop-sex" class="ip-popover">
+          <div class="ip-pop-title">Biological Sex</div>
+          <div class="ip-pop-desc">Affects UTI classification, pregnancy assessment, and IBW calculation for gentamicin dosing.</div>
+          <div class="ip-pop-field">
+            <label>Sex</label>
+            <select class="ip-pop-select" id="abx-sel-sex">
+              <option value="">— Select —</option>
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="other">Other / not specified</option>
+            </select>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('sex')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('sex')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- Weight -->
+        <div id="abx-pop-weight" class="ip-popover">
+          <div class="ip-pop-title">Weight (kg)</div>
+          <div class="ip-pop-desc">Used for gentamicin dosing weight calculation (adjusted body weight if obese). Optional for all other agents.</div>
+          <div class="ip-pop-field">
+            <label>Weight (kg)</label>
+            <div class="ip-range-row">
+              <input type="range" class="ip-pop-range" id="abx-rng-weight" min="40" max="160" step="0.5" value="70" oninput="document.getElementById('abx-rng-weight-val').textContent=parseFloat(this.value).toFixed(1)">
+              <span class="ip-range-val" id="abx-rng-weight-val">70.0</span>
+            </div>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('weight')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('weight')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- Height -->
+        <div id="abx-pop-height" class="ip-popover">
+          <div class="ip-pop-title">Height (cm)</div>
+          <div class="ip-pop-desc">Used with weight and sex to calculate ideal body weight for gentamicin dosing in obese patients.</div>
+          <div class="ip-pop-field">
+            <label>Height (cm)</label>
+            <div class="ip-range-row">
+              <input type="range" class="ip-pop-range" id="abx-rng-height" min="140" max="210" step="1" value="170" oninput="document.getElementById('abx-rng-height-val').textContent=this.value">
+              <span class="ip-range-val" id="abx-rng-height-val">170</span>
+            </div>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('height')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('height')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- Pregnant -->
+        <div id="abx-pop-pregnant" class="ip-popover">
+          <div class="ip-pop-title">Pregnancy Status</div>
+          <div class="ip-pop-desc">Pregnancy is a mandatory classification field. Trimethoprim and fluoroquinolones are excluded. Nitrofurantoin is contraindicated at term.</div>
+          <div class="ip-pop-field">
+            <label>Pregnancy</label>
+            <select class="ip-pop-select" id="abx-sel-pregnant">
+              <option value="">— Select —</option>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+              <option value="unknown">Unknown / not established</option>
+            </select>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('pregnant')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('pregnant')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- Catheter -->
+        <div id="abx-pop-catheter" class="ip-popover">
+          <div class="ip-pop-title">Urinary Catheter</div>
+          <div class="ip-pop-desc">Catheter-associated UTI (CAUTI) is a complicated lower UTI. Consider catheter removal or change per NICE NG112.</div>
+          <div class="ip-pop-field">
+            <label>Urinary catheter in situ</label>
+            <select class="ip-pop-select" id="abx-sel-catheter">
+              <option value="">— Select —</option>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('catheter')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('catheter')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- Immunocompromised -->
+        <div id="abx-pop-immunocomp" class="ip-popover">
+          <div class="ip-pop-title">Immunocompromised Status</div>
+          <div class="ip-pop-desc">Includes: active chemotherapy, immunosuppressants, HIV with low CD4, solid organ transplant, prolonged corticosteroids (&gt;10 mg/day &gt;3 weeks). Triggers complicated lower UTI path.</div>
+          <div class="ip-pop-field">
+            <label>Immunocompromised</label>
+            <select class="ip-pop-select" id="abx-sel-immunocomp">
+              <option value="">— Select —</option>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('immunocomp')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('immunocomp')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- Structural -->
+        <div id="abx-pop-structural" class="ip-popover">
+          <div class="ip-pop-title">Structural Urinary Abnormality</div>
+          <div class="ip-pop-desc">Includes: polycystic kidneys, single kidney, ileal conduit, ureteric stent, previous urological surgery, or known anatomical abnormality. Triggers complicated lower UTI path with mandatory urology follow-up.</div>
+          <div class="ip-pop-field">
+            <label>Structural abnormality</label>
+            <select class="ip-pop-select" id="abx-sel-structural">
+              <option value="">— Select —</option>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('structural')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('structural')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- Penicillin allergy -->
+        <div id="abx-pop-pen_allergy" class="ip-popover">
+          <div class="ip-pop-title">Penicillin Allergy</div>
+          <div class="ip-pop-desc">Risk-stratified per UKHSA guidance. High-risk allergy (anaphylaxis, urticaria, angioedema) excludes all beta-lactams. Low-risk (rash &gt;72hr, GI only) permits cephalosporin use with monitoring.</div>
+          <div class="ip-pop-field">
+            <label>Penicillin allergy risk</label>
+            <select class="ip-pop-select" id="abx-sel-pen-allergy">
+              <option value="">— Select —</option>
+              <option value="none">No allergy — penicillins permitted</option>
+              <option value="low">Low-risk — delayed non-severe reaction</option>
+              <option value="high">High-risk — IgE-mediated or severe reaction</option>
+            </select>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('pen_allergy')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('pen_allergy')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- Site -->
+        <div id="abx-pop-site" class="ip-popover">
+          <div class="ip-pop-title">UTI Site &amp; Classification</div>
+          <div class="ip-pop-desc">Drives the primary decision pathway. Urosepsis is defined by systemic features (NEWS2 ≥5 or clinical sepsis criteria). Upper UTI = pyelonephritis with fever or loin pain, no sepsis criteria.</div>
+          <div class="ip-pop-field">
+            <label>UTI classification</label>
+            <select class="ip-pop-select" id="abx-sel-site">
+              <option value="">— Select —</option>
+              <option value="lower">Lower UTI — bladder/urethra</option>
+              <option value="upper">Upper UTI — pyelonephritis (no sepsis)</option>
+              <option value="urosepsis">Urosepsis — systemic features / NEWS2 ≥5</option>
+            </select>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('site')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('site')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- eGFR -->
+        <div id="abx-pop-egfr" class="ip-popover">
+          <div class="ip-pop-title">eGFR / Renal Function</div>
+          <div class="ip-pop-desc">Drives dose adjustment for all renally-cleared agents. Key thresholds: &lt;45 = impaired (nitrofurantoin contraindicated), &lt;30 = severe (major adjustments required).</div>
+          <div class="ip-pop-field">
+            <label>eGFR (mL/min/1.73m²)</label>
+            <div class="ip-range-row">
+              <input type="range" class="ip-pop-range" id="abx-rng-egfr" min="5" max="120" step="1" value="60" oninput="document.getElementById('abx-rng-egfr-val').textContent=this.value">
+              <span class="ip-range-val" id="abx-rng-egfr-val">60</span>
+            </div>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('egfr')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('egfr')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- ALT -->
+        <div id="abx-pop-alt" class="ip-popover">
+          <div class="ip-pop-title">ALT (Alanine Aminotransferase)</div>
+          <div class="ip-pop-desc">Upper limit of normal: 40 U/L. ALT &gt;120 U/L (&gt;3× ULN) with hepatotoxic agents (co-amoxiclav, flucloxacillin) is a prescribing caution.</div>
+          <div class="ip-pop-field">
+            <label>ALT (U/L)</label>
+            <div class="ip-range-row">
+              <input type="range" class="ip-pop-range" id="abx-rng-alt" min="5" max="400" step="1" value="30" oninput="document.getElementById('abx-rng-alt-val').textContent=this.value">
+              <span class="ip-range-val" id="abx-rng-alt-val">30</span>
+            </div>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('alt')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('alt')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- AST -->
+        <div id="abx-pop-ast" class="ip-popover">
+          <div class="ip-pop-title">AST (Aspartate Aminotransferase)</div>
+          <div class="ip-pop-desc">Upper limit of normal: 40 U/L. Used alongside ALT for hepatotoxicity screening when prescribing co-amoxiclav or flucloxacillin.</div>
+          <div class="ip-pop-field">
+            <label>AST (U/L)</label>
+            <div class="ip-range-row">
+              <input type="range" class="ip-pop-range" id="abx-rng-ast" min="5" max="400" step="1" value="30" oninput="document.getElementById('abx-rng-ast-val').textContent=this.value">
+              <span class="ip-range-val" id="abx-rng-ast-val">30</span>
+            </div>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('ast')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('ast')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- WBC -->
         <div id="abx-pop-wbc" class="ip-popover">
           <div class="ip-pop-title">White Blood Cell Count</div>
-          <div class="ip-pop-desc">Normal range 4–11 ×10⁹/L. Elevated WBC suggests active infection or inflammatory response.</div>
+          <div class="ip-pop-desc">Normal range 4–11 ×10⁹/L. Elevated WBC suggests active infection or inflammatory response. Trend is more useful than a single value.</div>
           <div class="ip-pop-field">
             <label>WBC (×10⁹/L)</label>
             <div class="ip-range-row">
-              <input type="range" class="ip-pop-range" id="abx-rng-wbc" min="2" max="30" step="0.5" value="14.2" oninput="document.getElementById('abx-rng-wbc-val').textContent=this.value">
-              <span class="ip-range-val" id="abx-rng-wbc-val">14.2</span>
+              <input type="range" class="ip-pop-range" id="abx-rng-wbc" min="2" max="35" step="0.5" value="11" oninput="document.getElementById('abx-rng-wbc-val').textContent=parseFloat(this.value).toFixed(1)">
+              <span class="ip-range-val" id="abx-rng-wbc-val">11.0</span>
             </div>
           </div>
           <div class="ip-pop-actions">
@@ -4636,14 +5053,16 @@
             <button class="ip-pop-apply" onclick="abxApplyParam('wbc')">Apply &amp; Update</button>
           </div>
         </div>
+
+        <!-- CRP -->
         <div id="abx-pop-crp" class="ip-popover">
           <div class="ip-pop-title">C-Reactive Protein</div>
-          <div class="ip-pop-desc">Normal &lt;5 mg/L. CRP is a key marker of systemic inflammation — trend is more informative than a single value.</div>
+          <div class="ip-pop-desc">Normal &lt;5 mg/L. CRP trend is more informative than a single value for stewardship decisions. Biochemical lag behind clinical response is expected and should not delay step-down in an improving patient.</div>
           <div class="ip-pop-field">
             <label>CRP (mg/L)</label>
             <div class="ip-range-row">
-              <input type="range" class="ip-pop-range" id="abx-rng-crp" min="1" max="300" step="1" value="88" oninput="document.getElementById('abx-rng-crp-val').textContent=this.value">
-              <span class="ip-range-val" id="abx-rng-crp-val">88</span>
+              <input type="range" class="ip-pop-range" id="abx-rng-crp" min="1" max="400" step="1" value="50" oninput="document.getElementById('abx-rng-crp-val').textContent=this.value">
+              <span class="ip-range-val" id="abx-rng-crp-val">50</span>
             </div>
           </div>
           <div class="ip-pop-actions">
@@ -4651,29 +5070,35 @@
             <button class="ip-pop-apply" onclick="abxApplyParam('crp')">Apply &amp; Update</button>
           </div>
         </div>
-        <div id="abx-pop-gfr" class="ip-popover">
-          <div class="ip-pop-title">eGFR / Renal Function</div>
-          <div class="ip-pop-desc">Affects antimicrobial dosing intervals and choice. Dose adjustment thresholds vary by agent.</div>
+
+        <!-- PCT -->
+        <div id="abx-pop-pct" class="ip-popover">
+          <div class="ip-pop-title">Procalcitonin (PCT)</div>
+          <div class="ip-pop-desc">
+            PCT thresholds: &lt;0.1 µg/L = bacterial infection unlikely; 0.1–0.25 = low; 0.25–0.5 = possible; ≥0.5 = probable bacterial; &gt;2.0 = definite. De-escalate when PCT falls &gt;80% from peak.
+          </div>
           <div class="ip-pop-field">
-            <label>eGFR (mL/min/1.73m²)</label>
+            <label>PCT (µg/L)</label>
             <div class="ip-range-row">
-              <input type="range" class="ip-pop-range" id="abx-rng-gfr" min="10" max="90" step="5" value="52" oninput="document.getElementById('abx-rng-gfr-val').textContent=this.value">
-              <span class="ip-range-val" id="abx-rng-gfr-val">52</span>
+              <input type="range" class="ip-pop-range" id="abx-rng-pct" min="0" max="10" step="0.05" value="0.5" oninput="document.getElementById('abx-rng-pct-val').textContent=parseFloat(this.value).toFixed(2)">
+              <span class="ip-range-val" id="abx-rng-pct-val">0.50</span>
             </div>
           </div>
           <div class="ip-pop-actions">
-            <button class="ip-pop-cancel" onclick="abxClosePopover('gfr')">Cancel</button>
-            <button class="ip-pop-apply" onclick="abxApplyParam('gfr')">Apply &amp; Update</button>
+            <button class="ip-pop-cancel" onclick="abxClosePopover('pct')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('pct')">Apply &amp; Update</button>
           </div>
         </div>
+
+        <!-- Temp -->
         <div id="abx-pop-temp" class="ip-popover">
           <div class="ip-pop-title">Temperature</div>
-          <div class="ip-pop-desc">Fever ≥38.0°C suggests active systemic infection. Defervescence is a positive clinical sign.</div>
+          <div class="ip-pop-desc">Fever ≥38.0°C indicates active systemic infection. Defervescence is a positive clinical sign and supports step-down decisions.</div>
           <div class="ip-pop-field">
             <label>Temperature (°C)</label>
             <div class="ip-range-row">
-              <input type="range" class="ip-pop-range" id="abx-rng-temp" min="36.0" max="41.0" step="0.1" value="37.4" oninput="document.getElementById('abx-rng-temp-val').textContent=parseFloat(this.value).toFixed(1)">
-              <span class="ip-range-val" id="abx-rng-temp-val">37.4</span>
+              <input type="range" class="ip-pop-range" id="abx-rng-temp" min="35.0" max="42.0" step="0.1" value="37.0" oninput="document.getElementById('abx-rng-temp-val').textContent=parseFloat(this.value).toFixed(1)">
+              <span class="ip-range-val" id="abx-rng-temp-val">37.0</span>
             </div>
           </div>
           <div class="ip-pop-actions">
@@ -4681,33 +5106,227 @@
             <button class="ip-pop-apply" onclick="abxApplyParam('temp')">Apply &amp; Update</button>
           </div>
         </div>
-        <div id="abx-pop-improvement" class="ip-popover">
-          <div class="ip-pop-title">Clinical Improvement</div>
-          <div class="ip-pop-desc">Overall clinical trajectory since antimicrobial initiation — the most important single stewardship input.</div>
+
+        <!-- NEWS2 -->
+        <div id="abx-pop-news2" class="ip-popover">
+          <div class="ip-pop-title">NEWS2 Score</div>
+          <div class="ip-pop-desc">NEWS2 ≥5 triggers automatic urosepsis upgrade regardless of the site field. Ensure NEWS2 is calculated on current observations before selecting UTI classification.</div>
           <div class="ip-pop-field">
-            <label>Clinical trajectory</label>
-            <select class="ip-pop-select" id="abx-sel-improvement">
-              <option value="improving">Improving — symptom resolution, tolerating oral intake, mobilising</option>
-              <option value="stable">Stable — no deterioration but limited improvement</option>
-              <option value="worsening">Worsening — new or progressive organ dysfunction</option>
+            <label>NEWS2 score</label>
+            <div class="ip-range-row">
+              <input type="range" class="ip-pop-range" id="abx-rng-news2" min="0" max="20" step="1" value="0" oninput="document.getElementById('abx-rng-news2-val').textContent=this.value">
+              <span class="ip-range-val" id="abx-rng-news2-val">0</span>
+            </div>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('news2')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('news2')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- ABX day -->
+        <div id="abx-pop-abx_day" class="ip-popover">
+          <div class="ip-pop-title">Antibiotic Course Day</div>
+          <div class="ip-pop-desc">Day 1 = first day of the current course. Used to assess duration appropriateness and step-down eligibility (minimum day 2–3 for most pathways).</div>
+          <div class="ip-pop-field">
+            <label>Course day (1-based)</label>
+            <div class="ip-range-row">
+              <input type="range" class="ip-pop-range" id="abx-rng-abx-day" min="1" max="21" step="1" value="1" oninput="document.getElementById('abx-rng-abx-day-val').textContent=this.value">
+              <span class="ip-range-val" id="abx-rng-abx-day-val">1</span>
+            </div>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('abx_day')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('abx_day')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- IV days -->
+        <div id="abx-pop-iv_days" class="ip-popover">
+          <div class="ip-pop-title">IV Days Completed</div>
+          <div class="ip-pop-desc">Number of intravenous antibiotic days completed. Enter 0 if the patient is on oral therapy only. Step-down requires ≥1 IV day in most pathways.</div>
+          <div class="ip-pop-field">
+            <label>IV days (0 = oral only)</label>
+            <div class="ip-range-row">
+              <input type="range" class="ip-pop-range" id="abx-rng-iv-days" min="0" max="14" step="1" value="0" oninput="document.getElementById('abx-rng-iv-days-val').textContent=this.value">
+              <span class="ip-range-val" id="abx-rng-iv-days-val">0</span>
+            </div>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('iv_days')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('iv_days')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- Current ABX -->
+        <div id="abx-pop-current_abx" class="ip-popover">
+          <div class="ip-pop-title">Current Antibiotic</div>
+          <div class="ip-pop-desc">The active antibiotic regimen. Used to apply renal dose adjustments and hepatotoxicity screening in the monitoring section.</div>
+          <div class="ip-pop-field">
+            <label>Current antibiotic agent</label>
+            <select class="ip-pop-select" id="abx-sel-current-abx">
+              <option value="">— Select —</option>
+              <option value="nitrofurantoin">Nitrofurantoin</option>
+              <option value="trimethoprim">Trimethoprim</option>
+              <option value="pivmecillinam">Pivmecillinam</option>
+              <option value="cefalexin">Cefalexin</option>
+              <option value="co-amoxiclav">Co-amoxiclav (amoxicillin-clavulanate)</option>
+              <option value="ciprofloxacin">Ciprofloxacin</option>
+              <option value="pip-taz">Piperacillin-tazobactam (pip-taz)</option>
+              <option value="meropenem">Meropenem</option>
+              <option value="gentamicin">Gentamicin</option>
+              <option value="other">Other</option>
             </select>
           </div>
           <div class="ip-pop-actions">
-            <button class="ip-pop-cancel" onclick="abxClosePopover('improvement')">Cancel</button>
-            <button class="ip-pop-apply" onclick="abxApplyParam('improvement')">Apply &amp; Update</button>
+            <button class="ip-pop-cancel" onclick="abxClosePopover('current_abx')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('current_abx')">Apply &amp; Update</button>
           </div>
         </div>
-        <div id="abx-pop-culture" class="ip-popover">
-          <div class="ip-pop-title">Culture &amp; Sensitivity Data</div>
-          <div class="ip-pop-desc">Availability of culture results is the primary driver of de-escalation eligibility.</div>
+
+        <!-- Prior ABX 90d -->
+        <div id="abx-pop-prior_abx_90d" class="ip-popover">
+          <div class="ip-pop-title">Prior Antibiotics (90 Days)</div>
+          <div class="ip-pop-desc">Any antibiotic course in the past 90 days increases the probability of resistant organisms and may indicate empirical spectrum broadening.</div>
           <div class="ip-pop-field">
-            <label>Culture status</label>
+            <label>Prior antibiotics in last 90 days</label>
+            <select class="ip-pop-select" id="abx-sel-prior-abx-90d">
+              <option value="">— Select —</option>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('prior_abx_90d')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('prior_abx_90d')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- Prior resistant -->
+        <div id="abx-pop-prior_resistant" class="ip-popover">
+          <div class="ip-pop-title">Prior Resistant Organism</div>
+          <div class="ip-pop-desc">Any documented resistant organism on prior cultures (same or recent episode). Significantly increases probability of resistance on current episode.</div>
+          <div class="ip-pop-field">
+            <label>Prior resistant organism on record</label>
+            <select class="ip-pop-select" id="abx-sel-prior-resistant">
+              <option value="">— Select —</option>
+              <option value="no">No</option>
+              <option value="yes">Yes — documented on prior culture</option>
+            </select>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('prior_resistant')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('prior_resistant')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- Hospital onset -->
+        <div id="abx-pop-hospital_onset" class="ip-popover">
+          <div class="ip-pop-title">Hospital-Onset Infection</div>
+          <div class="ip-pop-desc">Infection acquired ≥48hr after hospital admission. Associated with higher rates of resistant organisms (Gram-negatives, MRSA) — consider broader empirical spectrum.</div>
+          <div class="ip-pop-field">
+            <label>Hospital-onset infection</label>
+            <select class="ip-pop-select" id="abx-sel-hospital-onset">
+              <option value="">— Select —</option>
+              <option value="no">No — community-acquired or within 48hr</option>
+              <option value="yes">Yes — acquired ≥48hr post-admission</option>
+            </select>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('hospital_onset')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('hospital_onset')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- Response -->
+        <div id="abx-pop-response" class="ip-popover">
+          <div class="ip-pop-title">Clinical Response</div>
+          <div class="ip-pop-desc">The single most important stewardship signal. Worsening response is a mandatory escalation trigger regardless of laboratory values. Clinical trajectory outweighs a single CRP result.</div>
+          <div class="ip-pop-field">
+            <label>Clinical trajectory since antibiotic initiation</label>
+            <select class="ip-pop-select" id="abx-sel-response">
+              <option value="">— Select —</option>
+              <option value="improving">Improving — symptom resolution, tolerating oral, mobilising</option>
+              <option value="stable">Stable — no deterioration but limited improvement</option>
+              <option value="worsening">Worsening — new or progressive organ dysfunction / no response</option>
+            </select>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('response')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('response')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <div class="dp-disclaimer">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-shrink-0"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          Fields marked ★ are mandatory. The reasoning engine activates once all mandatory fields are completed. Optional fields refine the output.
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           SECTION 2: MICROBIOLOGY
+      ══════════════════════════════════════════════════════════════ -->
+      <div id="abx-section-micro" class="dp-section">
+        <div class="dp-section-header">
+          <div class="dp-section-title-wrap">
+            <div class="dp-section-label">Step 2</div>
+            <div class="dp-section-title">Microbiology</div>
+            <div class="dp-section-subtitle">Culture results, organism identification, ESBL status, and susceptibility data. Completing these fields enables culture-directed de-escalation and resistance logic.</div>
+          </div>
+        </div>
+
+        <div class="abx-param-grid">
+
+          <!-- Culture result -->
+          <div class="abx-param-card" id="abx-p-culture" onclick="abxOpenPopover('culture', event)">
+            <div class="abx-param-label">Culture result <span style="color:var(--red);font-size:9px;">★</span></div>
+            <div class="abx-param-value" id="abx-val-culture">—</div>
+            <div class="abx-param-status" id="abx-status-culture">Primary de-escalation gating field</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- Organism -->
+          <div class="abx-param-card" id="abx-p-organism" onclick="abxOpenPopover('organism', event)">
+            <div class="abx-param-label">Organism identified</div>
+            <div class="abx-param-value" id="abx-val-organism">—</div>
+            <div class="abx-param-status" id="abx-status-organism">If culture positive</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- ESBL -->
+          <div class="abx-param-card" id="abx-p-esbl" onclick="abxOpenPopover('esbl', event)">
+            <div class="abx-param-label">ESBL status</div>
+            <div class="abx-param-value" id="abx-val-esbl">—</div>
+            <div class="abx-param-status" id="abx-status-esbl">Extended-spectrum beta-lactamase</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+          <!-- Susceptibility -->
+          <div class="abx-param-card" id="abx-p-susceptibility" onclick="abxOpenPopover('susceptibility', event)">
+            <div class="abx-param-label">Susceptibility profile</div>
+            <div class="abx-param-value" id="abx-val-susceptibility">—</div>
+            <div class="abx-param-status" id="abx-status-susceptibility">Breadth of effective agents</div>
+            <button class="ip-edit-btn">Edit ↗</button>
+          </div>
+
+        </div>
+
+        <!-- ── POPOVERS — Section 2 ────────────────────────────────── -->
+
+        <!-- Culture -->
+        <div id="abx-pop-culture" class="ip-popover">
+          <div class="ip-pop-title">Culture &amp; Sensitivity Result</div>
+          <div class="ip-pop-desc">Availability of culture results is the primary gating field for de-escalation in upper UTI and urosepsis. Never de-escalate in urosepsis without microbiological confirmation.</div>
+          <div class="ip-pop-field">
+            <label>Culture result</label>
             <select class="ip-pop-select" id="abx-sel-culture">
+              <option value="">— Select —</option>
               <option value="pending">Pending — awaiting result</option>
-              <option value="no-growth">No growth — 48–72hr negative</option>
-              <option value="sensitive">Sensitive organism — narrow-spectrum agent possible</option>
-              <option value="resistant">Resistant organism — broad-spectrum required</option>
-              <option value="contaminant">Likely contaminant — clinical correlation needed</option>
+              <option value="sensitive">Sensitive organism — narrow-spectrum effective</option>
+              <option value="resistant">Resistant organism — current regimen inadequate</option>
+              <option value="no-growth">No growth — 72hr negative</option>
+              <option value="mixed">Mixed growth — polymicrobial</option>
+              <option value="contaminated">Contaminated sample — repeat required</option>
             </select>
           </div>
           <div class="ip-pop-actions">
@@ -4716,23 +5335,87 @@
           </div>
         </div>
 
-        <div class="dp-disclaimer">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-shrink-0"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-          Parameters are pre-populated for demonstration. All values update the stewardship assessment in real time.
-        </div>
-      </div>
-
-      <!-- ── SECTION 2: STEWARDSHIP ASSESSMENT ──────────────────────── -->
-      <div id="abx-section-assessment" class="dp-section">
-        <div class="dp-section-header">
-          <div class="dp-section-title-wrap">
-            <div class="dp-section-label">Step 2</div>
-            <div class="dp-section-title">Stewardship Assessment</div>
-            <div class="dp-section-subtitle">Clinical reasoning layer — interpreting lab trends, trajectory, and culture data together.</div>
+        <!-- Organism -->
+        <div id="abx-pop-organism" class="ip-popover">
+          <div class="ip-pop-title">Organism Identified</div>
+          <div class="ip-pop-desc">Select if organism has been identified on culture. Used to contextualise susceptibility data and refine recommendation text.</div>
+          <div class="ip-pop-field">
+            <label>Organism</label>
+            <select class="ip-pop-select" id="abx-sel-organism">
+              <option value="">— Not identified / pending —</option>
+              <option value="ecoli">E. coli</option>
+              <option value="klebsiella">Klebsiella pneumoniae</option>
+              <option value="enterococcus">Enterococcus spp.</option>
+              <option value="pseudomonas">Pseudomonas aeruginosa</option>
+              <option value="proteus">Proteus mirabilis</option>
+              <option value="staph_sapro">Staphylococcus saprophyticus</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('organism')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('organism')">Apply &amp; Update</button>
           </div>
         </div>
 
-        <!-- Clinical Status Summary equivalent for ABX -->
+        <!-- ESBL -->
+        <div id="abx-pop-esbl" class="ip-popover">
+          <div class="ip-pop-title">ESBL Status</div>
+          <div class="ip-pop-desc">ESBL-producing organisms are resistant to most penicillins and cephalosporins. Carbapenems (meropenem) are required. Pip-taz must be avoided even if it appears sensitive in vitro (inoculum effect).</div>
+          <div class="ip-pop-field">
+            <label>Extended-spectrum beta-lactamase</label>
+            <select class="ip-pop-select" id="abx-sel-esbl">
+              <option value="">— Select —</option>
+              <option value="unknown">Unknown / not tested</option>
+              <option value="no">No — ESBL negative</option>
+              <option value="yes">Yes — ESBL confirmed</option>
+            </select>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('esbl')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('esbl')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <!-- Susceptibility -->
+        <div id="abx-pop-susceptibility" class="ip-popover">
+          <div class="ip-pop-title">Susceptibility Profile</div>
+          <div class="ip-pop-desc">Breadth of effective agents based on sensitivity testing. 'Narrow' = sensitive to first-line oral agents. 'Broad' = wider spectrum required. 'Carbapenem only' = pan-resistant except carbapenem.</div>
+          <div class="ip-pop-field">
+            <label>Susceptibility breadth</label>
+            <select class="ip-pop-select" id="abx-sel-susceptibility">
+              <option value="">— Select —</option>
+              <option value="unknown">Unknown / pending</option>
+              <option value="narrow">Narrow — sensitive to first-line oral agents</option>
+              <option value="broad">Broad spectrum required</option>
+              <option value="carbapenem_only">Carbapenem only — pan-resistant</option>
+            </select>
+          </div>
+          <div class="ip-pop-actions">
+            <button class="ip-pop-cancel" onclick="abxClosePopover('susceptibility')">Cancel</button>
+            <button class="ip-pop-apply" onclick="abxApplyParam('susceptibility')">Apply &amp; Update</button>
+          </div>
+        </div>
+
+        <div class="dp-disclaimer">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-shrink-0"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          Culture result is the primary de-escalation gating field. De-escalation in urosepsis must never proceed without microbiological confirmation per NICE NG112.
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           SECTION 3: CLINICAL ASSESSMENT
+      ══════════════════════════════════════════════════════════════ -->
+      <div id="abx-section-assessment" class="dp-section">
+        <div class="dp-section-header">
+          <div class="dp-section-title-wrap">
+            <div class="dp-section-label">Step 3</div>
+            <div class="dp-section-title">Clinical Assessment</div>
+            <div class="dp-section-subtitle">Clinical reasoning layer — interpreting inflammatory trends, trajectory, culture data, and classification together.</div>
+          </div>
+        </div>
+
+        <!-- Clinical Status Summary -->
         <div class="css-block" id="abx-css-block">
           <div class="css-block-head">
             <div class="css-block-head-left">
@@ -4740,54 +5423,56 @@
                 <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
                 Clinical Status Summary
               </div>
-              <div class="css-block-title" id="abx-css-title">Antimicrobial Review — Day 3</div>
+              <div class="css-block-title" id="abx-css-title">Antimicrobial Stewardship Assessment — UTI</div>
             </div>
             <div class="css-block-head-right">
               <div class="css-overall-badge" id="abx-css-badge">
                 <span class="css-overall-dot" id="abx-css-badge-dot"></span>
-                <span id="abx-css-badge-label">Clinical improvement noted</span>
+                <span id="abx-css-badge-label">Awaiting input</span>
               </div>
             </div>
           </div>
           <div class="css-grid" style="grid-template-columns: repeat(4, 1fr);">
             <div class="css-metric">
               <div class="css-metric-label">Inflammatory Trend</div>
-              <div class="css-metric-value" id="abx-m-inflam">Improving</div>
-              <div class="css-metric-sub" id="abx-m-inflam-sub">WBC 14.2 · CRP 88</div>
+              <div class="css-metric-value" id="abx-m-inflam">—</div>
+              <div class="css-metric-sub" id="abx-m-inflam-sub">—</div>
             </div>
             <div class="css-metric">
               <div class="css-metric-label">Fever Status</div>
-              <div class="css-metric-value" id="abx-m-fever">Afebrile</div>
-              <div class="css-metric-sub" id="abx-m-fever-sub">37.4°C — resolved</div>
+              <div class="css-metric-value" id="abx-m-fever">—</div>
+              <div class="css-metric-sub" id="abx-m-fever-sub">—</div>
             </div>
             <div class="css-metric">
               <div class="css-metric-label">Clinical Trajectory</div>
-              <div class="css-metric-value" id="abx-m-trajectory">Improving</div>
-              <div class="css-metric-sub" id="abx-m-traj-sub">Tolerating oral · mobilising</div>
+              <div class="css-metric-value" id="abx-m-trajectory">—</div>
+              <div class="css-metric-sub" id="abx-m-traj-sub">—</div>
             </div>
             <div class="css-metric" style="border-right:none;">
               <div class="css-metric-label">Renal Status</div>
-              <div class="css-metric-value" id="abx-m-renal">Mild impairment</div>
-              <div class="css-metric-sub" id="abx-m-renal-sub">eGFR 52 — dose adj. active</div>
+              <div class="css-metric-value" id="abx-m-renal">—</div>
+              <div class="css-metric-sub" id="abx-m-renal-sub">—</div>
             </div>
           </div>
           <div class="css-assessment-row">
             <div class="css-assessment-label">Overall Assessment</div>
-            <div class="css-assessment-text" id="abx-overall-text">Patient demonstrates meaningful clinical improvement on Day 3 of IV piperacillin-tazobactam. Inflammatory markers remain elevated but are trending in the right direction. Defervescence achieved. Clinical improvement is the dominant stewardship signal at this stage.</div>
+            <div class="css-assessment-text" id="abx-overall-text">Complete mandatory fields in Patient Profile and Microbiology to generate the clinical assessment.</div>
           </div>
         </div>
 
-        <!-- Clinical Impression for ABX -->
+        <!-- Clinical Impression -->
         <div class="ci-block" id="abx-ci-block">
           <div class="ci-head">
             <span class="ci-eyebrow">
               <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
               Clinical Impression
             </span>
-            <span class="ci-timepoint">Day 3 Review</span>
+            <span class="ci-timepoint" id="abx-ci-timepoint">Day — Review</span>
           </div>
           <div class="ci-body">
-            <div class="ci-paragraphs" id="abx-ci-paragraphs"></div>
+            <div class="ci-paragraphs" id="abx-ci-paragraphs">
+              <div class="ci-line ci-line-neutral">Complete mandatory fields to generate clinical impression.</div>
+            </div>
             <div class="ci-conclusion" id="abx-ci-conclusion">
               <span class="ci-conclusion-label">Clinical direction</span>
               <span class="ci-conclusion-text" id="abx-ci-conclusion-text"></span>
@@ -4801,39 +5486,43 @@
         </div>
       </div>
 
-      <!-- ── SECTION 3: RECOMMENDATION ──────────────────────────────── -->
+      <!-- ══════════════════════════════════════════════════════════════
+           SECTION 4: RECOMMENDATION
+      ══════════════════════════════════════════════════════════════ -->
       <div id="abx-section-recommendation" class="dp-section">
         <div class="dp-section-header">
           <div class="dp-section-title-wrap">
-            <div class="dp-section-label">Step 3</div>
+            <div class="dp-section-label">Step 4</div>
             <div class="dp-section-title">Stewardship Recommendation</div>
-            <div class="dp-section-subtitle">Primary recommendation with rationale and supporting considerations.</div>
+            <div class="dp-section-subtitle">Primary recommendation with rationale, confidence, classification pathway, and supporting decision logic.</div>
           </div>
+        </div>
+
+        <!-- Classification badge -->
+        <div style="margin-bottom:10px;">
+          <span class="ev-guideline-badge" id="abx-rec-classification">—</span>
         </div>
 
         <!-- Primary rec block -->
         <div class="ds-primary">
-          <div class="ds-primary-eyebrow" id="abx-rec-eyebrow">Stewardship recommendation · Day 3 review</div>
+          <div class="ds-primary-eyebrow" id="abx-rec-eyebrow">Stewardship recommendation — NICE NG112 · NICE NG15</div>
           <div class="ds-primary-rec">
-            <div class="ds-primary-drug" id="abx-rec-action">Consider<br>De-escalation</div>
-            <div class="ds-primary-state" id="abx-rec-state">Clinically supported</div>
+            <div class="ds-primary-drug" id="abx-rec-action">Complete mandatory fields to generate recommendation</div>
+            <div class="ds-primary-state" id="abx-rec-state">Awaiting input</div>
           </div>
-          <div class="ds-primary-rationale" id="abx-rec-rationale">Patient is clinically improving with defervescence, tolerating oral intake, and mobilising. Inflammatory markers remain elevated but are on a downward trend. In the context of clinical improvement, sustained elevated CRP alone is not a contraindication to de-escalation. Oral step-down to amoxicillin-clavulanate should be considered if culture data supports a sensitive organism or no growth at 72 hours.</div>
+          <div class="ds-primary-rationale" id="abx-rec-rationale">Enter patient profile and microbiology data to activate the reasoning engine.</div>
 
           <div class="ds-primary-ev-chips">
-            <span class="ds-primary-ev-chip strong" id="abx-chip-1">IDSA Stewardship Principles</span>
-            <span class="ds-primary-ev-chip strong" id="abx-chip-2">Clinical improvement outweighs markers</span>
-            <span class="ds-primary-ev-chip caution" id="abx-chip-3">Culture data awaited</span>
-            <span class="ds-primary-ev-chip" id="abx-chip-4">Renal dose adjustment maintained</span>
+            <!-- Chips written by engine via innerHTML on .ds-primary-ev-chips -->
           </div>
 
           <div class="ds-conf-strip">
             <div class="ds-conf-main">
-              <div class="ds-conf-pct" id="abx-conf-pct">76%</div>
+              <div class="ds-conf-pct" id="abx-conf-pct">—</div>
               <div class="ds-conf-detail">
-                <div class="ds-conf-label" id="abx-conf-label">Moderate-high confidence</div>
-                <div class="ds-conf-desc" id="abx-conf-desc">Clinical trajectory supports de-escalation · pending culture confirmation</div>
-                <div class="ds-conf-bar"><div class="ds-conf-bar-fill" id="abx-conf-bar" style="width:76%;"></div></div>
+                <div class="ds-conf-label" id="abx-conf-label">Awaiting assessment</div>
+                <div class="ds-conf-desc" id="abx-conf-desc">Complete mandatory fields to generate confidence score</div>
+                <div class="ds-conf-bar"><div class="ds-conf-bar-fill" id="abx-conf-bar" style="width:0%;"></div></div>
               </div>
             </div>
           </div>
@@ -4841,20 +5530,20 @@
           <div class="ds-primary-cols">
             <div>
               <div class="ds-pcol-label">De-escalation target</div>
-              <div class="ds-pcol-val" id="abx-deesc-target">Oral amoxicillin-clavulanate<br><span class="ds-pcol-sub">If no resistant organism</span></div>
+              <div class="ds-pcol-val" id="abx-deesc-target">—</div>
             </div>
             <div>
               <div class="ds-pcol-label">Prerequisite</div>
-              <div class="ds-pcol-val" id="abx-prerequisite">72-hr culture result<br><span class="ds-pcol-sub">No growth or sensitive organism</span></div>
+              <div class="ds-pcol-val" id="abx-prerequisite">—</div>
             </div>
             <div>
-              <div class="ds-pcol-label">Duration target</div>
-              <div class="ds-pcol-val">5 days total (CAP)<br><span class="ds-pcol-sub">Per IDSA/ATS 2019 guidance</span></div>
+              <div class="ds-pcol-label">Guideline source</div>
+              <div class="ds-pcol-val">NICE NG112 · NICE NG15<br><span class="ds-pcol-sub">UKHSA AMR guidance</span></div>
             </div>
           </div>
         </div>
 
-        <!-- Why not alternatives -->
+        <!-- Stewardship decision logic -->
         <div class="dp-subsection-label">Stewardship decision logic</div>
         <div class="wn-block">
           <div class="wn-head">
@@ -4863,25 +5552,22 @@
           </div>
           <div class="wn-grid">
             <div class="wn-col">
-              <div class="wn-col-title">Continue IV therapy <span class="wn-col-state cond">Conditional</span></div>
-              <div class="wn-reason" id="abx-wn-continue">Appropriate if clinical deterioration or culture reveals resistant organism.</div>
-              <div class="wn-item">Continued IV exposure carries line-related infection risk — minimise duration</div>
-              <div class="wn-item">IV-to-oral step-down is supported once clinical stability criteria met</div>
-              <div class="wn-item">Reserve for non-responders or confirmed resistant organisms</div>
+              <div class="wn-col-title">Continue current therapy <span class="wn-col-state cond">Conditional</span></div>
+              <div class="wn-reason" id="abx-wn-continue">—</div>
+              <div class="wn-item">Reserve for early course (day 1–2) or culture pending in urosepsis</div>
+              <div class="wn-item">IV continuation carries line-associated infection risk — minimise duration</div>
             </div>
             <div class="wn-col">
-              <div class="wn-col-title">De-escalate to oral <span class="wn-col-state" id="abx-wn-deesc-state">Preferred</span></div>
-              <div class="wn-reason" id="abx-wn-deesc">Clinical improvement is the primary trigger for IV-to-oral step-down.</div>
-              <div class="wn-item">Defervescence achieved — afebrile 37.4°C</div>
-              <div class="wn-item">Tolerating oral intake and mobilising — oral bioavailability acceptable</div>
-              <div class="wn-item" id="abx-wn-culture-item">Await culture result before finalising — no growth likely supports narrow-spectrum oral</div>
+              <div class="wn-col-title">De-escalate <span class="wn-col-state" id="abx-wn-deesc-state">—</span></div>
+              <div class="wn-reason" id="abx-wn-deesc">—</div>
+              <div class="wn-item">Clinical improvement is the primary step-down trigger per NICE NG112</div>
+              <div class="wn-item" id="abx-wn-culture-item">—</div>
             </div>
             <div class="wn-col wn-col-divided">
-              <div class="wn-col-title">Escalate therapy <span class="wn-col-state avoid" id="abx-wn-esc-state">Not indicated</span></div>
-              <div class="wn-reason" id="abx-wn-esc">No clinical or microbiological trigger for escalation at this review.</div>
-              <div class="wn-item">Patient is improving — escalation without deterioration is not stewardship-appropriate</div>
-              <div class="wn-item">No resistant organism confirmed in culture</div>
-              <div class="wn-item">Reserve for documented treatment failure or resistant pathogen</div>
+              <div class="wn-col-title">Escalate <span class="wn-col-state avoid" id="abx-wn-esc-state">—</span></div>
+              <div class="wn-reason" id="abx-wn-esc">—</div>
+              <div class="wn-item">Mandatory if worsening response regardless of laboratory values</div>
+              <div class="wn-item">Mandatory if resistant organism confirmed — do not continue ineffective agent</div>
             </div>
           </div>
         </div>
@@ -4892,31 +5578,33 @@
         </div>
       </div>
 
-      <!-- ── SECTION 4: MONITORING ───────────────────────────────────── -->
+      <!-- ══════════════════════════════════════════════════════════════
+           SECTION 5: MONITORING
+      ══════════════════════════════════════════════════════════════ -->
       <div id="abx-section-monitoring" class="dp-section">
         <div class="dp-section-header">
           <div class="dp-section-title-wrap">
-            <div class="dp-section-label">Step 4</div>
+            <div class="dp-section-label">Step 5</div>
             <div class="dp-section-title">Monitoring Parameters</div>
-            <div class="dp-section-subtitle">Ongoing safety and efficacy monitoring requirements for the current antimicrobial regimen.</div>
+            <div class="dp-section-subtitle">Safety monitoring, renal dose status, culture follow-up, and duration check for the current antimicrobial regimen.</div>
           </div>
         </div>
 
         <div class="mn-top">
           <div class="mn-stat-card">
-            <div class="mn-stat-label">Current regimen day</div>
-            <div class="mn-stat-val mn-stat-val-lg">Day 3</div>
-            <div class="mn-stat-sub">IV pip-tazo 4.5 g TDS</div>
+            <div class="mn-stat-label">Current course day</div>
+            <div class="mn-stat-val mn-stat-val-lg" id="abx-mon-day">—</div>
+            <div class="mn-stat-sub" id="abx-mon-agent">Complete Patient Profile to populate</div>
           </div>
           <div class="mn-stat-card mn-stat-card-uncertain">
             <div class="mn-stat-label mn-stat-uncertain">Culture result</div>
-            <div class="mn-stat-val mn-stat-val-pending">Pending</div>
-            <div class="mn-stat-sub mn-stat-uncertain">De-escalation contingent on result</div>
+            <div class="mn-stat-val mn-stat-val-pending" id="abx-mon-culture-val">—</div>
+            <div class="mn-stat-sub mn-stat-uncertain" id="abx-mon-culture-sub">Complete Microbiology section</div>
           </div>
           <div class="mn-stat-card">
             <div class="mn-stat-label">Renal monitoring</div>
-            <div class="mn-stat-val" style="font-size:14px;margin-top:4px;color:var(--amber)">Active</div>
-            <div class="mn-stat-sub">eGFR 52 — dose adjusted</div>
+            <div class="mn-stat-val" id="abx-mon-renal-val" style="font-size:14px;margin-top:4px;color:var(--navy);font-weight:600;">—</div>
+            <div class="mn-stat-sub" id="abx-mon-renal-sub">eGFR not entered</div>
           </div>
         </div>
 
@@ -4926,52 +5614,60 @@
             <div>Checkpoint</div><div>Labs / tests</div><div>Clinical assessment</div><div>Action trigger</div>
           </div>
           <div class="mon-schedule-row">
-            <div class="mon-cell-checkpoint mon-cell-amber">72hr ★</div>
+            <div class="mon-cell-checkpoint mon-cell-amber">48–72hr</div>
             <div class="mon-cell">Culture result, eGFR recheck, WBC, CRP</div>
-            <div class="mon-cell">Clinical trajectory, fever status, oral tolerance</div>
-            <div class="mon-cell mon-cell-red">Culture + improvement → step down. Resistant organism → escalate. Deterioration → urgent review.</div>
+            <div class="mon-cell">Clinical trajectory, fever, oral tolerance</div>
+            <div class="mon-cell mon-cell-red">Sensitive + improving → de-escalate. Resistant → escalate immediately. Worsening → senior review.</div>
           </div>
           <div class="mon-schedule-row">
             <div class="mon-cell-checkpoint">Daily</div>
             <div class="mon-cell">Temperature, WBC if clinically indicated</div>
-            <div class="mon-cell">Fever, organ function, oral tolerance, mobility</div>
-            <div class="mon-cell mon-cell-muted">New fever or deterioration → do not step down. Escalate and review culture urgently.</div>
+            <div class="mon-cell">Fever, organ function, oral tolerance</div>
+            <div class="mon-cell mon-cell-muted">New fever or deterioration → do not de-escalate. Reassess site classification.</div>
           </div>
           <div class="mon-schedule-row mon-row-last">
-            <div class="mon-cell-checkpoint">Day 5 (target)</div>
-            <div class="mon-cell">End-of-treatment CRP, WBC if required</div>
-            <div class="mon-cell">Reassess need for further antimicrobial therapy</div>
-            <div class="mon-cell mon-cell-muted">Total 5-day course per IDSA/ATS CAP guidance. Stop if goals met.</div>
+            <div class="mon-cell-checkpoint" id="abx-mon-eot">End of course</div>
+            <div class="mon-cell">End-of-treatment CRP if upper UTI or urosepsis</div>
+            <div class="mon-cell">Reassess need for further therapy</div>
+            <div class="mon-cell mon-cell-muted">Stop antibiotics when clinical criteria met and course duration achieved per guideline.</div>
           </div>
         </div>
 
-        <div class="dp-subsection-label">Renal dosing — current eGFR</div>
+        <div class="dp-subsection-label">Renal dose status — current agent</div>
         <div class="renal-dosing-block">
           <div class="renal-dosing-cols">
             <div class="renal-dosing-col">
-              <div class="renal-dosing-label">Piperacillin-tazobactam</div>
-              <div class="renal-dosing-val renal-dosing-val-amber" id="abx-rd-piptz">4.5 g TDS (eGFR 30–59)</div>
-              <div class="renal-dosing-note" id="abx-rd-piptz-note">Dose interval extended per renal guidance. Standard dose 4.5 g QDS at eGFR ≥60.</div>
+              <div class="renal-dosing-label">Current agent — renal-adjusted dose</div>
+              <div class="renal-dosing-val" id="abx-rd-piptz">—</div>
+              <div class="renal-dosing-note" id="abx-rd-piptz-note">Complete Patient Profile and select current antibiotic to populate.</div>
             </div>
             <div class="renal-dosing-col">
-              <div class="renal-dosing-label">If oral step-down: Co-amoxiclav</div>
-              <div class="renal-dosing-val" id="abx-rd-oral">625 mg TDS (eGFR ≥30)</div>
-              <div class="renal-dosing-note">Standard dosing applicable at current eGFR. No adjustment required for co-amoxiclav at eGFR 52.</div>
+              <div class="renal-dosing-label">eGFR status</div>
+              <div class="renal-dosing-val" id="abx-mon-egfr-display">—</div>
+              <div class="renal-dosing-note" id="abx-mon-egfr-note">Enter eGFR in Patient Profile.</div>
             </div>
             <div class="renal-dosing-col">
               <div class="renal-dosing-label">Monitoring requirement</div>
-              <div class="renal-dosing-val renal-dosing-val-amber">eGFR recheck at 72hr</div>
-              <div class="renal-dosing-note">Acute illness may cause transient renal deterioration. Recheck before extending course beyond 5 days.</div>
+              <div class="renal-dosing-val" id="abx-mon-recheck">eGFR recheck</div>
+              <div class="renal-dosing-note" id="abx-mon-recheck-note">Acute infection may cause transient renal deterioration. Recheck eGFR at 72hr if impaired.</div>
             </div>
           </div>
         </div>
 
         <div class="mn-contra">
-          <div class="mn-contra-label">Flags &amp; safety considerations</div>
-          <div class="mn-contra-item" id="abx-flag-1"><span class="mn-contra-x">⚠</span> Culture-negative at 72hr — reassess empirical spectrum. Consider narrowing if clinical picture supports.</div>
-          <div class="mn-contra-item"><span class="mn-contra-x">⚠</span> Prolonged IV access increases line infection risk — transition to oral as soon as clinical criteria met.</div>
-          <div class="mn-contra-item" id="abx-flag-renal"><span class="mn-contra-x">⚠</span> eGFR 52 — monitor for acute kidney injury during course. Stop all nephrotoxic agents if eGFR falls &gt;20%.</div>
+          <div class="mn-contra-label">Active flags &amp; safety considerations</div>
+          <div class="mn-contra-item" id="abx-flag-1"><span class="mn-contra-x">—</span> Complete Microbiology section to generate culture flag.</div>
+          <div class="mn-contra-item" id="abx-flag-renal"><span class="mn-contra-x">—</span> Enter eGFR to generate renal flag.</div>
+          <div class="mn-contra-item" id="abx-flag-duration"><span class="mn-contra-x">—</span> Enter antibiotic day to generate duration check.</div>
+          <div class="mn-contra-item" id="abx-flag-gentamicin" style="display:none;"><span class="mn-contra-x">ℹ</span> Gentamicin monitoring — see below.</div>
           <div class="mn-contra-item"><span class="mn-contra-x">ℹ</span> Document indication, intended duration, and review date in clinical notes at each contact — stewardship standard.</div>
+        </div>
+
+        <div class="dp-subsection-label">Follow-up schedule</div>
+        <div class="mn-contra">
+          <div id="abx-followup-schedule" style="padding: 6px 0;">
+            <div class="mn-contra-item">Complete mandatory fields to generate follow-up schedule.</div>
+          </div>
         </div>
 
         <div class="dp-disclaimer">
